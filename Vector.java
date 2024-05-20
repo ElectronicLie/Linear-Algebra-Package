@@ -1,9 +1,14 @@
 public class Vector extends Matrix{
 
   public Vector(double[] ary){
-    //super(new double[][] {{0}});
-    this.vals = new double[1][ary.length];
-    this.vals[0] = ary;
+    this.vals = new double[ary.length][1];
+    for (int i = 0; i < ary.length; i++){
+      vals[i][0] = ary[i];
+    }
+  }
+
+  public Vector(int dim){
+    vals = new double[dim][1];
   }
 
   public int dim(){
@@ -11,7 +16,7 @@ public class Vector extends Matrix{
   }
 
   public double get(int i){
-    return this.vals[0][i];
+    return this.vals[i][0];
   }
 
   public double dot(Vector v){
@@ -23,6 +28,10 @@ public class Vector extends Matrix{
       dot += get(i) * v.get(i);
     }
     return dot;
+  }
+
+  public static double dot(Vector u, Vector v){
+    return v.dot(u);
   }
 
 }
