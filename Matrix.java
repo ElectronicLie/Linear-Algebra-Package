@@ -70,28 +70,30 @@ public class Matrix{
     double rounded;
     String cur;
     int curChars;
-    int colMaxChars = 0;
-    for (int r = 0; r < m(); r++){
-      for (int c = 0; c < n(); c++){
+    int[] colMaxChars = new int[n()];
+    for (int c = 0; c < n(); c++){
+      colMaxChars[c] = 0;
+      for (int r = 0; r < m(); r++){
         rounded = Math.round(Math.pow(10,n) * get(r,c)) / Math.pow(10,n);
         cur = rounded + "";
         curChars = cur.length();
-        if (curChars > colMaxChars){
-          colMaxChars = curChars;
+        if (curChars > colMaxChars[c]){
+          colMaxChars[c] = curChars;
         }
       }
+    }
+    for (int r = 0; r < m(); r++){
       result += "[ ";
       for (int c = 0; c < n(); c++){
         rounded = Math.round(Math.pow(10,n) * get(r,c)) / Math.pow(10,n);
         cur = rounded + "";
         curChars = cur.length();
-        for (int i = 0; i < colMaxChars - curChars; i++){
+        for (int i = 0; i < colMaxChars[c] - curChars; i++){
           cur += " ";
         }
         result += cur + " ";
       }
       result += "]\n";
-      colMaxChars = 0;
     }
     return result;
   }
@@ -108,14 +110,12 @@ public class Matrix{
     }
   }
 
-  public Matrix plus(double k){
-    Matrix result = new Matrix(m(), n());
+  public void plus(double k){
     for (int r = 0; r < m(); r++){
       for (int c = 0; c < n(); c++){
-        result.vals[r][c] = this.vals[r][c] + k;
+        vals[r][c] += k;
       }
     }
-    return result;
   }
 
 }

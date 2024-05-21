@@ -34,4 +34,29 @@ public class Vector extends Matrix{
     return v.dot(u);
   }
 
+  public boolean orthogonal(Vector v){
+    return (dot(v) == 0);
+  }
+
+  public static boolean orthogonal(Vector u, Vector v){
+    return (dot(u,v) == 0);
+  }
+
+  public double sum(){
+    double sum = 0;
+    for (int i = 0; i < dim(); i++){
+      sum += get(i);
+    }
+    return sum;
+  }
+
+  public double mag(){
+    double mag = 0;
+    for (int i = 0; i < dim(); i++){
+      mag += Math.pow(get(i), 2);
+    }
+    mag = Math.sqrt(mag);
+    return mag;
+  }
+
 }
