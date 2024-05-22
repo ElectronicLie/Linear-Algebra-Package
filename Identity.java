@@ -1,3 +1,5 @@
+package linalg;
+
 public class Identity extends SquareMatrix{
 
   public Identity(int dim){

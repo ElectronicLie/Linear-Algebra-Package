@@ -1,3 +1,5 @@
+package linalg;
+
 public class StochasticMatrix extends SquareMatrix{
 
   public StochasticMatrix(int dim){

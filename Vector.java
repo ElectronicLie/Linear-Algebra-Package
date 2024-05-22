@@ -1,3 +1,5 @@
+package linalg;
+
 public class Vector extends Matrix{
 
   public Vector(double[] ary){

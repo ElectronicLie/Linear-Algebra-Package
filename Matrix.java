@@ -1,3 +1,5 @@
+package linalg;
+
 public class Matrix{
 
   protected double[][] vals;
