@@ -1,4 +1,5 @@
 package linalg;
+import java.util.ArrayList;
 
 public class Matrix{
 
@@ -12,6 +13,26 @@ public class Matrix{
 
   public Matrix(double[][] vals){
     vals = vals;
+  }
+
+  public Matrix(ArrayList<Vector> cols){
+    int m;
+    try{
+      m = cols.get(0).dim();
+    }catch(Exception e){
+      throw new IllegalArgumentException
+        ("matrix must be constructed with at least one vector");
+    }
+    vals = new double[m][cols.size()];
+    for (int c = 0; c < cols.size(); c++){
+      if (cols.get(c).dim() != m){
+        throw new IllegalArgumentException
+          ("matrix columns must all have the same dimension");
+      }
+      for (int r = 0; r < m; r++){
+        vals[r][c] = cols.get(c).get(r);
+      }
+    }
   }
 
   public int m(){
@@ -52,9 +73,37 @@ public class Matrix{
     return product;
   }
 
+  // public <T extends Matrix> T mult(T A){
+  //   if (n() != A.m()){
+  //     throw new IllegalArgumentException
+  //       ("left matrix's number of columns is not equal to right matrix's number of rows");
+  //   }
+  //   T product = new Matrix(m(), A.n());
+  //   for (int r = 0; r < m(); r++){
+  //     for (int c = 0; c < A.n(); c++){
+  //       product.vals[r][c] = Vector.dot(row(r), A.col(c));
+  //     }
+  //   }
+  //   return product;
+  // }
+
   public static Matrix mult(Matrix B, Matrix A){
     return B.mult(A);
   }
+
+  // public static <T extends Matrix> T mult(T B, T A){
+  //   if (B.n() != A.m()){
+  //     throw new IllegalArgumentException
+  //     ("left matrix's number of columns is not equal to right matrix's number of rows");
+  //   }
+  //   Matrix product = new Matrix(m(), A.n());
+  //   for (int r = 0; r < m(); r++){
+  //     for (int c = 0; c < A.n(); c++){
+  //       product.vals[r][c] = Vector.dot(row(r), A.col(c));
+  //     }
+  //   }
+  //   return product;
+  // }
 
   public Matrix pow(int n){
     if (n == 0){
@@ -118,6 +167,16 @@ public class Matrix{
         vals[r][c] += k;
       }
     }
+  }
+
+  public Matrix transpose(){
+    Matrix T = new Matrix(n(), m());
+    for (int r = 0; r < m(); r++){
+      for (int c = 0; c < n(); c++){
+        T.vals[c][r] = vals[r][c];
+      }
+    }
+    return T;
   }
 
 }

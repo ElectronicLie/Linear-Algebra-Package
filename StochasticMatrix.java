@@ -1,5 +1,7 @@
 package linalg;
 
+import java.util.ArrayList;
+
 public class StochasticMatrix extends SquareMatrix{
 
   public StochasticMatrix(int dim){
@@ -8,12 +10,22 @@ public class StochasticMatrix extends SquareMatrix{
 
   public StochasticMatrix(double[][] vals){
     super(vals);
-    if (! allNonNegative(vals))
-      throw new IllegalArgumentException("stochastic matrices cannot have negative entries");
+    stochasticize();
+  }
+
+  public StochasticMatrix(ArrayList<Vector> cols){
+    super(cols);
+    stochasticize();
+  }
+
+  public StochasticMatrix(Network network){
+    super(network);
     stochasticize();
   }
 
   private void stochasticize(){
+    if (! allNonNegative(vals))
+      throw new IllegalArgumentException("stochastic matrices cannot have negative entries");
     double colSum = 0;
     for (int c = 0; c < n(); c++){
       for (int r = 0; r < m(); r++){

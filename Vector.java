@@ -2,11 +2,14 @@ package linalg;
 
 public class Vector extends Matrix{
 
+  protected double[] ary;
+
   public Vector(double[] ary){
     this.vals = new double[ary.length][1];
     for (int i = 0; i < ary.length; i++){
       vals[i][0] = ary[i];
     }
+    this.ary = ary;
   }
 
   public Vector(int dim){
@@ -59,6 +62,14 @@ public class Vector extends Matrix{
     }
     mag = Math.sqrt(mag);
     return mag;
+  }
+
+  public void stochasticize(){
+    scale(1.0/sum());
+  }
+
+  public void normalize(){
+    scale(1.0/mag());
   }
 
 }
