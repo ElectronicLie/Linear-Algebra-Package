@@ -26,7 +26,7 @@ public class Network{
     return nodes.get(n);
   }
 
-  public void addNode(Node node){
+  public void add(Node node){
     nodes.add(node);
     updateNodes();
     node.setNetwork(this);

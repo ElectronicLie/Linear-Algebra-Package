@@ -62,8 +62,8 @@ public class Node{
   }
 
   private static boolean aryContains(String[] ary, String target){
-    for (int i = 0; i < ary.length; i++){
-      if (ary[i].equals(target)){
+    for (String str : ary){
+      if (str.equals(target)){
         return true;
       }
     }
