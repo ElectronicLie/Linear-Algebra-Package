@@ -5,6 +5,8 @@ public class Matrix{
 
   protected double[][] vals;
 
+  static final int DEFAULT_ROUND = 3;
+
   public Matrix(){}
 
   public Matrix(int rows, int cols){
@@ -85,7 +87,7 @@ public class Matrix{
   }
 
   public String toString(){
-    return toString(3);
+    return toString(DEFAULT_ROUND);
   }
 
   public String toString(int n){
@@ -149,6 +151,14 @@ public class Matrix{
       }
     }
     return T;
+  }
+
+  protected static double round(double x, int n){
+    return Math.round(Math.pow(10, n) * x) / Math.pow(10,n);
+  }
+
+  protected static double round(double x){
+    return round(x, DEFAULT_ROUND);
   }
 
 }
