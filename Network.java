@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 public class Network{
 
-  private ArrayList<Node> nodes;
-  private boolean equallyWeightedEdges;
+  protected ArrayList<Node> nodes;
+  protected boolean equallyWeightedEdges;
 
   public Network(boolean equal){
     equallyWeightedEdges = equal;

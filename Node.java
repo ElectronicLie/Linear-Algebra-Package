@@ -108,8 +108,10 @@ public class Node{
 
   private static int aryIndexOf(String[] ary, String target){
     for (int i = 0; i < ary.length; i++){
-      if (ary[i].equals(target)){
-        return i;
+      if (ary[i] != null){
+        if (ary[i].equals(target)){
+          return i;
+        }
       }
     }
     return -1;
@@ -133,11 +135,10 @@ public class Node{
 
   private static String[] aryCopyAdd(String[] ary, String newStr){
     String[] result = new String[ary.length+1];
-    for (int i = 0; i < ary.length-1; i++){
+    for (int i = 0; i < ary.length; i++){
       result[i] = ary[i];
     }
     result[ary.length] = newStr;
-    result[ary.length] = ary[ary.length-1];
     return result;
   }
 
