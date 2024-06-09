@@ -23,35 +23,59 @@ public class Node{
     for (int i = 0; i < neibrs.length; i++){
       neighbors.add(null);
     }
-    edges = new ArrayList<Edge>(neibrs.length+1);
-    for (int i = 0; i < neibrs.length+1; i++){
+    edges = new ArrayList<Edge>(neibrs.length);
+    for (int i = 0; i < neibrs.length; i++){
       edges.add(null);
     }
-    edges.set(neibrs.length, new Edge(this, this, selfVal));
-    //updateNeighbors();
+    edges.add(new Edge(this, this, selfVal));
   }
 
   public Node(String name, String[] neibrs){
     this(name, neibrs, uniformPseudoStochasticAry(neibrs.length+1), 1.0/((double)neibrs.length+1.0));
   }
 
-  public void updateNeighbors(){
+  void updateNeighbors(){
     for (int n = 0; n < network.size(); n++){
       Node other = network.getNode(n);
       int i = aryIndexOf(nabrs, other.getName());
       if (i != -1 && getEdge(other) == null){
         neighbors.set(i, other);
         edges.set(i, new Edge(this, other, edgeVals[i]));
-        if (network.even()){
-          if (aryIndexOf(other.nabrs, this.getName()) == -1){
-            other.neighbors.add(this);
-            other.nabrs = aryCopyAdd(other.nabrs, this.getName());
-            other.edgeVals = uniformPseudoStochasticAry(other.nabrs.length);
-            other.addEdge(new Edge(other, this, other.edgeVals[other.edgeVals.length-1]));
-          }
+      }
+      if (network.isEven()){
+        edgeVals = evenEdgeValsForActiveNeighbors();
+        updateEdges();
+      }
+      if (network.isEven() && i != -1 && other.getEdge(this) == null){
+        if (aryIndexOf(other.nabrs, this.getName()) == -1){
+          other.neighbors.add(this);
+          other.nabrs = aryCopyAdd(other.nabrs, this.getName());
+          other.edgeVals = other.evenEdgeValsForActiveNeighbors();
+          other.updateEdges();
+          other.edges.get(other.edges.size()-1).setWeight(1.0/(double)(noActiveNeighbors()+1));
+          other.addEdge(new Edge(other, this, other.edgeVals[other.edgeVals.length-1]));
         }
       }
     }
+  }
+
+  private void updateEdges(){
+    for (int e = 0; e < edges.size(); e++){
+      if (edges.get(e) != null){
+        edges.get(e).setWeight(edgeVals[e]);
+      }
+    }
+  }
+
+  public int noActiveNeighbors(){
+    int result = 0;
+    for (int i = 0; i < neighbors.size(); i++){
+      if (neighbors.get(i) != null){
+        result++;
+      }
+    }
+    // System.out.println(name + neighbors);
+    return result;
   }
 
   public void setNetwork(Network network){
@@ -72,11 +96,17 @@ public class Node{
     return null;
   }
 
-  public double getEdgeVal(Node other){
-    return getEdge(other).getVal();
+  private void addEdge(Edge edge){
+    Edge selfEdge = edges.get(edges.size()-1);
+    edges.add(selfEdge);
+    edges.set(edges.size()-2,edge);
   }
 
-  public double[] getEdgeVals(){
+  public double getEdgeWeight(Node other){
+    return getEdge(other).getWeight();
+  }
+
+  public double[] getEdgeWeights(){
     return edgeVals;
   }
 
@@ -84,10 +114,15 @@ public class Node{
     return name;
   }
 
-  private void addEdge(Edge edge){
-    Edge selfEdge = edges.get(edges.size()-1);
-    edges.add(selfEdge);
-    edges.set(edges.size()-2,edge);
+  private double[] evenEdgeValsForActiveNeighbors(){
+    double[] result = new double[noActiveNeighbors()];
+    for (int i = 0; i < result.length; i++){
+      if (neighbors.get(i) == null)
+        result[i] = 0;
+      else
+        result[i] = 1.0 / (double)(noActiveNeighbors()+1); //active neighbors plus self
+    }
+    return result;
   }
 
   public String toString(){
@@ -95,7 +130,7 @@ public class Node{
   }
 
   public String sumToString(){
-    return "Node name: " + name + "\n" + "neighbors: " + Arrays.toString(nabrs);
+    return "Node name: " + name + "\n" + "neighbors' names: " + Arrays.toString(nabrs);
   }
 
   public String deepToString(){
@@ -103,7 +138,7 @@ public class Node{
       + "Network: " + network.toString() + "\n"
       + "neighbors ArrayList: " + neighbors.toString() + "\n"
       + "Edges ArrayList: " + edges.toString() + "\n"
-      + "Edge values: " + Arrays.toString(edgeVals);
+      + "Edge weights: " + Arrays.toString(edgeVals);
   }
 
   private static int aryIndexOf(String[] ary, String target){

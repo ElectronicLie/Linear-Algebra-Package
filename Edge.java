@@ -6,26 +6,30 @@ public class Edge{
 
   private Node giver;
   private Node taker;
-  private double val;
+  private double weight;
 
-  public Edge(Node n1, Node n2, double val){
+  public Edge(Node n1, Node n2, double weight){
     giver = n1;
     taker = n2;
-    this.val = val;
+    this.weight = weight;
   }
 
-  public double getVal(){
-    return val;
+  public double getWeight(){
+    return weight;
+  }
+
+  protected void setWeight(double newVal){
+    weight = newVal;
   }
 
   public String deepToString(){
     return "initial Node: " + giver.getName() + "\n"
       + "terminal Node: " + taker.getName() + "\n"
-      + "weight: " + val;
+      + "weight: " + weight;
   }
 
   public String toString(){
-    return "(" + giver.getName() + ", " + taker.getName() + ", " + Matrix.round(val) + ")";
+    return "(" + giver.getName() + ", " + taker.getName() + " : " + Matrix.round(weight) + ")";
   }
 
 }

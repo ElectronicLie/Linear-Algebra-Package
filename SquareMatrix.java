@@ -29,7 +29,7 @@ public class SquareMatrix extends Matrix{
         if (network.getNode(c).getEdge(network.getNode(r)) == null){
           vals[r][c] = 0;
         }else{
-          vals[r][c] = network.getNode(c).getEdgeVal(network.getNode(r));
+          vals[r][c] = network.getNode(c).getEdgeWeight(network.getNode(r));
         }
       }
     }

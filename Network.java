@@ -12,6 +12,10 @@ public class Network{
     nodes = new ArrayList<Node>();
   }
 
+  public Network(){
+    this(false);
+  }
+
   public Network(ArrayList<Node> nodes, boolean equal){
     this(equal);
     nodes = nodes;
@@ -41,7 +45,7 @@ public class Network{
     }
   }
 
-  public boolean even(){
+  public boolean isEven(){
     return equallyWeightedEdges;
   }
 
@@ -52,6 +56,15 @@ public class Network{
       if (i < nodes.size() - 1){
         result += ", ";
       }
+    }
+    result += "]";
+    return result;
+  }
+
+  public String deepToString(){
+    String result = "[\n\n";
+    for (int i = 0; i < nodes.size(); i++){
+      result += nodes.get(i).deepToString() + "\n\n";
     }
     result += "]";
     return result;
