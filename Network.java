@@ -2,23 +2,16 @@ package linalg;
 
 import java.util.ArrayList;
 
-public class Network{
+public class Network<N extends Node>{
 
-  protected ArrayList<Node> nodes;
-  protected boolean equallyWeightedEdges;
-
-  public Network(boolean equal){
-    equallyWeightedEdges = equal;
-    nodes = new ArrayList<Node>();
-  }
+  protected ArrayList<N> nodes;
 
   public Network(){
-    this(false);
+    nodes = new ArrayList<N>();
   }
 
-  public Network(ArrayList<Node> nodes, boolean equal){
-    this(equal);
-    nodes = nodes;
+  public Network(ArrayList<N> nodes){
+    this.nodes = nodes;
     updateNodes();
     for (int n = 0; n < nodes.size(); n++){
       nodes.get(n).setNetwork(this);
@@ -33,20 +26,24 @@ public class Network{
     return nodes.get(n);
   }
 
-  public void add(Node node){
+  public void addNode(N node){
     node.setNetwork(this);
     nodes.add(node);
     updateNodes();
   }
 
-  private void updateNodes(){
+  protected void updateNode(int n){
+    getNode(n).updateNeighbors();
+  }
+
+  protected void updateNodes(){
     for (int n = 0; n < size(); n++){
-      getNode(n).updateNeighbors();
+      updateNode(n);
     }
   }
 
-  public boolean isEven(){
-    return equallyWeightedEdges;
+  public void clear(){
+    nodes = new ArrayList<N>();
   }
 
   public String toString(){
@@ -62,12 +59,38 @@ public class Network{
   }
 
   public String deepToString(){
-    String result = "[\n\n";
+    String result = "Network: " + toString() + "\n{\n\n";
     for (int i = 0; i < nodes.size(); i++){
-      result += nodes.get(i).deepToString() + "\n\n";
+      result += nodes.get(i).deepToStringWithoutNetwork() + "\n\n";
     }
-    result += "]";
+    result += "}";
     return result;
+  }
+
+  public String sumToString(){
+    String result = "Network: " + toString() + "\n{\n\n";
+    for (int i = 0; i < nodes.size(); i++){
+      result += nodes.get(i).sumMoreToString() + "\n\n";
+    }
+    result += "}";
+    return result;
+  }
+
+  public boolean isEven(){
+    return false;
+  }
+
+  public boolean isAdjacency(){
+    return false;
+  }
+
+  public int indexOfNode(String nodeName){
+    for (int n = 0; n < nodes.size(); n++){
+      if (nodes.get(n).getName().equals(nodeName)){
+        return n;
+      }
+    }
+    return -1;
   }
 
 }

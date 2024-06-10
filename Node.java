@@ -11,23 +11,27 @@ public class Node{
   protected String[] nabrs;
   protected Network network;
   protected String name;
+  protected String[] terminology;
 
   public Node(String name, String[] neibrs, double[] vals, double selfVal){
     this.name = name;
     if (neibrs.length != vals.length){
-      throw new IllegalArgumentException("Node must have the same number of neighbors and valued edges");
+      throw new IllegalArgumentException("Node must have the same number of neighbors and weighted edges");
     }
-    nabrs = neibrs;
-    edgeVals = vals;
+    nabrs = aryPrepend(neibrs, name);
+    edgeVals = aryPrepend(vals, selfVal);
     neighbors = new ArrayList<Node>(neibrs.length);
+    neighbors.add(this);
     for (int i = 0; i < neibrs.length; i++){
       neighbors.add(null);
     }
     edges = new ArrayList<Edge>(neibrs.length);
+    edges.add(new Edge(this, this, selfVal));
     for (int i = 0; i < neibrs.length; i++){
       edges.add(null);
     }
-    edges.add(new Edge(this, this, selfVal));
+    terminology = new String[] {"Node name", "Network", "neighbors' names", "Neighbors ArrayList",
+      "Edges ArrayList", "Edge weights"};
   }
 
   public Node(String name, String[] neibrs){
@@ -35,35 +39,57 @@ public class Node{
   }
 
   void updateNeighbors(){
+    if (nabrs.length != neighbors.size()){
+      throw new IllegalStateException("nabrs - "+nabrs.length+", "+"neighbors - "+neighbors.size());
+    }
     for (int n = 0; n < network.size(); n++){
       Node other = network.getNode(n);
-      int i = aryIndexOf(nabrs, other.getName());
-      if (i != -1 && getEdge(other) == null){
-        neighbors.set(i, other);
-        edges.set(i, new Edge(this, other, edgeVals[i]));
+      int indexOfNeighbor = aryIndexOf(nabrs, other.getName());
+      if (indexOfNeighbor != -1){
+        if (getEdge(other) == null)
+          neighbors.set(indexOfNeighbor, other);
+        updateEdge(indexOfNeighbor);
       }
       if (network.isEven()){
         edgeVals = evenEdgeValsForActiveNeighbors();
         updateEdges();
+        int indexOfSelf = aryIndexOf(other.nabrs, getName());
+        if (indexOfSelf != -1 && indexOfNeighbor == -1){
+          nabrs = aryAppend(nabrs, other.getName());
+          neighbors.add(other);
+          edges.add(null);
+          edgeVals = evenEdgeValsForActiveNeighbors();
+          updateEdges();
+        }
       }
-      if (network.isEven() && i != -1 && other.getEdge(this) == null){
-        if (aryIndexOf(other.nabrs, this.getName()) == -1){
-          other.neighbors.add(this);
-          other.nabrs = aryCopyAdd(other.nabrs, this.getName());
-          other.edgeVals = other.evenEdgeValsForActiveNeighbors();
-          other.updateEdges();
-          other.edges.get(other.edges.size()-1).setWeight(1.0/(double)(noActiveNeighbors()+1));
-          other.addEdge(new Edge(other, this, other.edgeVals[other.edgeVals.length-1]));
+      if (network.isAdjacency()){
+        edgeVals = adjacentEdgeValsForActiveNeighbors();
+        updateEdges();
+        int indexOfSelf = aryIndexOf(other.nabrs, getName());
+        if (indexOfSelf != -1 && indexOfNeighbor == -1){
+          nabrs = aryAppend(nabrs, other.getName());
+          neighbors.add(other);
+          edges.add(null);
+          edgeVals = adjacentEdgeValsForActiveNeighbors();
+          updateEdges();
         }
       }
     }
   }
 
-  private void updateEdges(){
-    for (int e = 0; e < edges.size(); e++){
-      if (edges.get(e) != null){
-        edges.get(e).setWeight(edgeVals[e]);
+  private void updateEdge(int n){
+    if (neighbors.get(n) != null){
+      if (edges.get(n) == null){
+        edges.set(n, new Edge(this, neighbors.get(n), edgeVals[n]));
+      }else{
+        edges.get(n).setWeight(edgeVals[n]);
       }
+    }
+  }
+
+  private void updateEdges(){
+    for (int n = 0; n < neighbors.size(); n++){
+      updateEdge(n);
     }
   }
 
@@ -74,7 +100,6 @@ public class Node{
         result++;
       }
     }
-    // System.out.println(name + neighbors);
     return result;
   }
 
@@ -96,12 +121,6 @@ public class Node{
     return null;
   }
 
-  private void addEdge(Edge edge){
-    Edge selfEdge = edges.get(edges.size()-1);
-    edges.add(selfEdge);
-    edges.set(edges.size()-2,edge);
-  }
-
   public double getEdgeWeight(Node other){
     return getEdge(other).getWeight();
   }
@@ -114,13 +133,24 @@ public class Node{
     return name;
   }
 
-  private double[] evenEdgeValsForActiveNeighbors(){
-    double[] result = new double[noActiveNeighbors()];
+  private double[] evenEdgeValsForActiveNeighbors(){ // including self
+    double[] result = new double[edges.size()];
     for (int i = 0; i < result.length; i++){
       if (neighbors.get(i) == null)
         result[i] = 0;
       else
-        result[i] = 1.0 / (double)(noActiveNeighbors()+1); //active neighbors plus self
+        result[i] = 1.0 / (double)(noActiveNeighbors()); //active neighbors plus self
+    }
+    return result;
+  }
+
+  private double[] adjacentEdgeValsForActiveNeighbors(){
+    double[] result = new double[edges.size()];
+    for (int i = 0; i < result.length; i++){
+      if (neighbors.get(i) == null)
+        result[i] = 0;
+      else
+        result[i] = 1;
     }
     return result;
   }
@@ -130,18 +160,39 @@ public class Node{
   }
 
   public String sumToString(){
-    return "Node name: " + name + "\n" + "neighbors' names: " + Arrays.toString(nabrs);
+    return terminology[0] + ": " + name + "\n" + terminology[2] + ": " +
+      Arrays.toString((nabrs));
+  }
+
+  public String sumMoreToString(){
+    return sumToString() + "\n"
+      + terminology[4] + ": " + edges.toString();
   }
 
   public String deepToString(){
     return sumToString() + "\n"
-      + "Network: " + network.toString() + "\n"
-      + "neighbors ArrayList: " + neighbors.toString() + "\n"
-      + "Edges ArrayList: " + edges.toString() + "\n"
-      + "Edge weights: " + Arrays.toString(edgeVals);
+      + terminology[1] + ": " + network.toString() + "\n"
+      + terminology[3] + ": " + neighbors.toString() + "\n"
+      + terminology[4] + ": " + edges.toString() + "\n"
+      + terminology[5] + ": " + Arrays.toString(edgeVals);
   }
 
-  private static int aryIndexOf(String[] ary, String target){
+  public String deepToStringWithoutNetwork(){
+    return sumToString() + "\n"
+      + terminology[3] + ": " + neighbors.toString() + "\n"
+      + terminology[4] + ": " + edges.toString() + "\n"
+      + terminology[5] + ": " + Arrays.toString(edgeVals);
+  }
+
+  private static String[] aryRemoveFirst(String[] ary){
+    String[] result = new String[ary.length-1];
+    for (int i = 0; i < result.length; i++){
+      result[i] = ary[i+1];
+    }
+    return result;
+  }
+
+  public static int aryIndexOf(String[] ary, String target){
     for (int i = 0; i < ary.length; i++){
       if (ary[i] != null){
         if (ary[i].equals(target)){
@@ -168,12 +219,30 @@ public class Node{
     return result;
   }
 
-  private static String[] aryCopyAdd(String[] ary, String newStr){
+  public static String[] aryAppend(String[] ary, String newStr){
     String[] result = new String[ary.length+1];
     for (int i = 0; i < ary.length; i++){
       result[i] = ary[i];
     }
     result[ary.length] = newStr;
+    return result;
+  }
+
+  private static String[] aryPrepend(String[] ary, String newElement){
+    String[] result = new String[ary.length+1];
+    result[0] = newElement;
+    for (int i = 1; i < result.length; i++){
+      result[i] = ary[i-1];
+    }
+    return result;
+  }
+
+  private static double[] aryPrepend(double[] ary, double newDouble){
+    double[] result = new double[ary.length+1];
+    result[0] = newDouble;
+    for (int i = 1; i < result.length; i++){
+      result[i] = ary[i-1];
+    }
     return result;
   }
 

@@ -11,20 +11,53 @@ public class MarkovChain{
   }
 
   public Vector steadyState(){
-    return matrix.pow(255).col(0);
+    return matrix.pow(1023).col(0);
   }
 
   public Vector step(Vector initialState, int n){
     return (Vector)(initialState.mult(this.matrix.pow(n)));
   }
 
-  public String steadyStateToString(){
+  public String steadyStateToString(int p){
     Vector v = steadyState();
     String result = "";
     for (int n = 0; n < network.size(); n++){
-      result += "[ " + v.get(n) + " ]" + network.getNode(n).getName();
+      result += "[ " + Matrix.round(v.get(n), p) + " ] " + network.getNode(n).getName() + "\n";
     }
     return result;
+  }
+
+  public String steadyStateToString(){
+    return steadyStateToString(Matrix.DEFAULT_ROUND);
+  }
+
+  public String sortedSteadyStateToString(int p){
+    String[] nodeNames = new String[network.size()];
+    for (int n = 0; n < network.size(); n++){
+      nodeNames[n] = network.getNode(n).getName();
+    }
+    Vector v = steadyState();
+    for (int i = v.dim()-1; i >= 0; i--){
+      for (int j = 0; j < i; j++){
+        if (v.get(j) > v.get(j+1)){
+          double tmp = v.get(j);
+          v.vals[j][0] = v.get(j+1);
+          v.vals[j+1][0] = tmp;
+          String strTmp = nodeNames[j];
+          nodeNames[j] = nodeNames[j+1];
+          nodeNames[j+1] = strTmp;
+        }
+      }
+    }
+    String result = "";
+    for (int n = 0; n < network.size(); n++){
+      result += "[ " + Matrix.round(v.get(n), p) + " ] " + nodeNames[n] + "\n";
+    }
+    return result;
+  }
+
+  public String sortedSteadyStateToString(){
+    return sortedSteadyStateToString(Matrix.DEFAULT_ROUND);
   }
 
   public String toString(){
@@ -33,6 +66,10 @@ public class MarkovChain{
 
   public String matrixToString(){
     return matrix.toString();
+  }
+
+  public String steadyStateMatrixToString(){
+    return matrix.pow(1023).toString();
   }
 
   public String toString(int n){

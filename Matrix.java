@@ -79,8 +79,9 @@ public class Matrix{
     return B.mult(A);
   }
 
-  public Matrix pow(int n){
-    if (n == 0){
+  public Matrix pow(double n){
+    n = Math.round(n);
+    if (n == 1){
       return this;
     }
     return this.mult(this.pow(n-1));
@@ -143,6 +144,17 @@ public class Matrix{
     }
   }
 
+  public void addTo(Matrix m){
+    if (m() != m.m() || n() != m.n()){
+      throw new IllegalArgumentException("Matrices must have the same dimensions to add");
+    }
+    for (int r = 0; r < m(); r++){
+      for (int c = 0; c < n(); c++){
+        vals[r][c] += m.get(r,c);
+      }
+    }
+  }
+
   public Matrix transpose(){
     Matrix T = new Matrix(n(), m());
     for (int r = 0; r < m(); r++){
@@ -151,6 +163,26 @@ public class Matrix{
       }
     }
     return T;
+  }
+
+  public double sum(){
+    double sum = 0;
+    for (double[] row : vals){
+      for (double val : row){
+        sum += val;
+      }
+    }
+    return sum;
+  }
+
+  protected boolean hasZeros(){
+    for (double[] row : vals){
+      for (double val : row){
+        if (val == 0)
+        return true;
+      }
+    }
+    return false;
   }
 
   protected static double round(double x, int n){

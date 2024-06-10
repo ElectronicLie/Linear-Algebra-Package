@@ -1,5 +1,7 @@
 package linalg;
 
+import java.util.Arrays;
+
 public class Vector extends Matrix{
 
   protected double[] ary;
@@ -70,6 +72,12 @@ public class Vector extends Matrix{
 
   public void normalize(){
     scale(1.0/mag());
+  }
+
+  protected Vector sorted(){
+    double[] aryCopy = Arrays.copyOf(this.ary, this.ary.length);
+    Arrays.sort(aryCopy);
+    return new Vector(aryCopy);
   }
 
 }
