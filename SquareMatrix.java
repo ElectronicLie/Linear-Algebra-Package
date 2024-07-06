@@ -110,16 +110,19 @@ public class SquareMatrix extends Matrix{
     return calcEigenvals(Math.pow(10,3), Math.pow(10,-3));
   }
 
-  public ArrayList<EigenVector> getEigenvectors(){
-    if (eigenCalced){
-      return this.eigenvectors;
-    }else{
-      double[] eigenvals = calcEigenvals();
-      for (int e = 0; e < eigenvals.length; e++){
-        this.eigenvectors.add(new Eigenvector(this, eigenvals[e]));
-      }
+  private void calcEigenvectors(){
+    double[] eigenvals = calcEigenvals();
+    for (int e = 0; e < eigenvals.length; e++){
+      this.eigenvectors.add(new Eigenvector(this, eigenvals[e]));
+    }
+  }
+
+  public Vector getEigenvector(int v){
+    if (! eigenCalced){
+      calcEigenvectors();
       this.eigenCalced = true;
     }
+    return eigenvectors.get(v);
   }
 
 }

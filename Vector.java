@@ -20,13 +20,16 @@ public class Vector extends Matrix{
 
   public Vector(int dim){
     vals = new double[dim][1];
+    ary = new double[dim];
   }
 
   public static Vector zero(int dim){
-    vals = new double[dim][1]
+    Vector result = new Vector(dim);
+    result.vals = new double[dim][1];
     for (int i = 0; i < dim; i++){
-      vals[i][0] = 0;
+      result.vals[i][0] = 0;
     }
+    return result;
   }
 
   public int dim(){

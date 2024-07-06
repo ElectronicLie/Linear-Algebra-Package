@@ -1,8 +1,10 @@
-run: Main.class
-	java Main
+run: Tester.class
+	java Tester.java
 
-Main.class: Main.java Vector.class Matrix.class SquareMatrix.class Identity.class StochasticMatrix.class
-	javac Main.java
+compile: Tester.class
+
+Tester.class: Tester.java Vector.class Matrix.class SquareMatrix.class Identity.class StochasticMatrix.class
+	javac Tester.java
 
 Vector.class: Vector.java
 	javac Vector.java

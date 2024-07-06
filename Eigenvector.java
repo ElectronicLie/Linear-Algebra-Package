@@ -2,16 +2,17 @@ package linalg;
 
 public class Eigenvector extends Vector{
 
-  private double eigenval;
-  private SquareMatrix M;
+  protected double eigenval;
+  protected SquareMatrix M;
 
   public Eigenvector(SquareMatrix m, double eigenvalue){
     M = m;
     eigenval = eigenvalue;
-    identity = new Identity(M.dim());
-    Matrix characteristicEqMatrix = M.add(identity.scale(-1 * eigenval));
-    Vector zerosConstants = Vector.zero();
-    
+    Matrix identity = new Identity(M.dim());
+    SquareMatrix characteristicEqMatrix = M.add(identity.scale(-1 * eigenval));
+    SystemOfEquations eq = new SystemOfEquations(characteristicEqMatrix);
+    eq.addZeroConstants();
+    this.vals = eq.solution().vals;
   }
 
 }
