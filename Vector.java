@@ -6,6 +6,10 @@ public class Vector extends Matrix{
 
   protected double[] ary;
 
+  public Vector(){
+    ary = new double[0];
+  }
+
   public Vector(double[] ary){
     this.vals = new double[ary.length][1];
     for (int i = 0; i < ary.length; i++){
@@ -18,12 +22,23 @@ public class Vector extends Matrix{
     vals = new double[dim][1];
   }
 
+  public static Vector zero(int dim){
+    vals = new double[dim][1]
+    for (int i = 0; i < dim; i++){
+      vals[i][0] = 0;
+    }
+  }
+
   public int dim(){
     return m();
   }
 
   public double get(int i){
     return this.vals[i][0];
+  }
+
+  public double[] getVals(){
+    return ary;
   }
 
   public double dot(Vector v){

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 public class SquareMatrix extends Matrix{
 
+  protected ArrayList<Eigenvector> eigenvectors;
+  protected boolean eigenCalced;
+
   public SquareMatrix(int dim){
     super(dim, dim);
   }
@@ -13,6 +16,7 @@ public class SquareMatrix extends Matrix{
       throw new IllegalArgumentException("square matrix must have an equal number of rows and columns");
     }
     vals = ary;
+    eigenCalced = false;
   }
 
   public SquareMatrix(ArrayList<Vector> cols){
@@ -20,6 +24,7 @@ public class SquareMatrix extends Matrix{
     if (vals.length != vals[0].length){
       throw new IllegalArgumentException("square matrix must have an equal number of rows and columns");
     }
+    eigenCalced = false;
   }
 
   public SquareMatrix(Network network){
@@ -32,6 +37,88 @@ public class SquareMatrix extends Matrix{
           vals[r][c] = network.getNode(c).getEdgeWeight(network.getNode(r));
         }
       }
+    }
+    eigenCalced = false;
+  }
+
+  public int dim(){
+    return n();
+  }
+
+  private SquareMatrix minor(int rExc, int cExc){
+    SquareMatrix result = new SquareMatrix(dim()-1);
+    for (int r = 0; r < rExc; r++){
+      for (int c = 0; c < cExc; c++){
+        result.vals[r][c] = vals[r][c];
+      }
+    }
+    for (int r = rExc+1; r < dim(); r++){
+      for (int c = 0; c < cExc; c++){
+        result.vals[r-1][c] = vals[r][c];
+      }
+    }
+    for (int r = 0; r < rExc; r++){
+      for (int c = cExc+1; c < dim(); c++){
+        result.vals[r][c-1] = vals[r][c];
+      }
+    }
+    for (int r = rExc+1; r < dim(); r++){
+      for (int c = cExc+1; c < dim(); c++){
+        result.vals[r-1][c-1] = vals[r][c];
+      }
+    }
+    return result;
+  }
+
+  private SquareMatrix minor(int cExc){
+    return minor(0, cExc);
+  }
+
+  private static double det(SquareMatrix part){
+    if (part.dim() == 1){
+      return part.get(0,0);
+    }else{
+      double sum = 0;
+      for (int c = 0; c < part.dim(); c++){
+        double minorDet = det(part.minor(c)) * part.get(0,c);
+        if (c % 2 == 1)
+          minorDet *= -1;
+        sum += minorDet;
+      }
+      return sum;
+    }
+  }
+
+  public double det(){
+    return det(this);
+  }
+
+  private double[] calcEigenvals(double range, double step){
+    double[] result = new double[0];
+    for (double lambda = -1 * range; lambda <= range; lambda += step){
+      SquareMatrix characteristicEquationMatrix = new Identity(dim());
+      characteristicEquationMatrix.scale(-1*lambda);
+      characteristicEquationMatrix.addTo(this);
+      if (Matrix.roughlyEquals(characteristicEquationMatrix.det(), 0, -5)){
+        aryAppend(result, lambda);
+      }
+    }
+    return result;
+  }
+
+  private double[] calcEigenvals(){
+    return calcEigenvals(Math.pow(10,3), Math.pow(10,-3));
+  }
+
+  public ArrayList<EigenVector> getEigenvectors(){
+    if (eigenCalced){
+      return this.eigenvectors;
+    }else{
+      double[] eigenvals = calcEigenvals();
+      for (int e = 0; e < eigenvals.length; e++){
+        this.eigenvectors.add(new Eigenvector(this, eigenvals[e]));
+      }
+      this.eigenCalced = true;
     }
   }
 

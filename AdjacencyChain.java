@@ -4,25 +4,68 @@ public class AdjacencyChain{
 
   private Network network;
   private AdjacencyMatrix matrix;
+  private Matrix sumChain;
+  private int noIterations;
 
   public AdjacencyChain(Network network){
     this.network = network;
     matrix = new AdjacencyMatrix(network);
+    calculateSumChain();
   }
 
-  public Matrix sumChain(){
+  private AdjacencyChain(double[][] ary, int iterations){
+    matrix = new AdjacencyMatrix(ary);
+    calculateSumChain(iterations);
+  }
+
+  private void calculateSumChain(int iterations){
     Matrix result = new Matrix(matrix.m(), matrix.n());
     Matrix term;
-    for (double n = 1; result.hasZeros(); n++){
+    double n;
+    for (n = 1; n <= iterations; n++){
       term = matrix.pow(n);
-      term.scale(1.0/n);
+      term.scale(1.0/(Math.pow(matrix.m(),n-1)));
       result.addTo(term);
     }
-    return result;
+    noIterations = iterations;
+    sumChain = result;
+  }
+
+  private void calculateSumChain(){
+    Matrix result = new Matrix(matrix.m(), matrix.n());
+    Matrix term;
+    double n;
+    for (n = 1; result.hasZeros(); n++){
+      term = matrix.pow(n);
+      term.scale(1.0/(Math.pow(matrix.m(),n-1)));
+      result.addTo(term);
+    }
+    System.out.println("number of iterations in AdjacencyChain: " + n);
+    noIterations = (int)n;
+    sumChain = result;
   }
 
   public double qualityIndex(double noPaths){
-    return sumChain().sum() / noPaths;
+    double thisIndex = sumChain.sum() / (sumChain.m() * sumChain.n() * noPaths * noIterations);
+    return thisIndex;
+  }
+
+  public double get(String node1, String node2){
+    return sumChain.get(network.indexOfNode(node1), network.indexOfNode(node2));
+  }
+
+  private static double[][] allOnes(int dim){
+    double[][] perfect = new double[dim][dim];
+    for (int i = 0; i < perfect.length; i++){
+      for (int j = 0; j < perfect[i].length; j++){
+        perfect[i][j] = 1;
+      }
+    }
+    return perfect;
+  }
+
+  public String toString(){
+    return toString(Matrix.DEFAULT_ROUND);
   }
 
   public String toString(int n){

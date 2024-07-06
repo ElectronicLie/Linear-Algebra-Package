@@ -37,7 +37,7 @@ public class MarkovChain{
       nodeNames[n] = network.getNode(n).getName();
     }
     Vector v = steadyState();
-    for (int i = v.dim()-1; i >= 0; i--){
+    for (int i = v.dim()-1; i >= 0; i--){ //bubble sort
       for (int j = 0; j < i; j++){
         if (v.get(j) > v.get(j+1)){
           double tmp = v.get(j);

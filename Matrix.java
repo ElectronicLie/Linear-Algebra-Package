@@ -1,5 +1,6 @@
 package linalg;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Matrix{
 
@@ -14,7 +15,7 @@ public class Matrix{
   }
 
   public Matrix(double[][] vals){
-    vals = vals;
+    this.vals = vals;
   }
 
   public Matrix(ArrayList<Vector> cols){
@@ -23,7 +24,7 @@ public class Matrix{
       m = cols.get(0).dim();
     }catch(Exception e){
       throw new IllegalArgumentException
-        ("matrix must be constructed with at least one vector");
+        ("matrix must be constructed with at least one column vector");
     }
     vals = new double[m][cols.size()];
     for (int c = 0; c < cols.size(); c++){
@@ -38,11 +39,15 @@ public class Matrix{
   }
 
   public int m(){
-    return vals.length;
+    return vals.length; // number of rows
   }
 
   public int n(){
-    return vals[0].length;
+    if (vals.length == 0){
+      return 0;
+    }else{
+      return vals[0].length;
+    }
   }
 
   public Vector row(int i){
@@ -79,12 +84,144 @@ public class Matrix{
     return B.mult(A);
   }
 
+  protected static Matrix combineVertically(Matrix A, Matrix B){
+    if (A.n() != B.n() && (! (A.m() == 0 || B.m() == 0))){ // emoty
+      throw new IllegalArgumentException
+        ("matrices must have the same number of columns when combining vertically");
+    }
+    Matrix result = new Matrix(A.m() + B.m(), A.n());
+    for (int r = 0; r < A.m(); r++){
+      result.vals[r] = A.vals[r];
+    }
+    for (int r = A.m(); r < A.m() + B.m(); r++){
+      result.vals[r] = B.vals[r - A.m()];
+    }
+    return result;
+  }
+
+  protected static Matrix combineHorizontally(Matrix A, Matrix B){
+    if (A.m() != B.m() && (! (A.n() == 0 || B.n() == 0))){
+      throw new IllegalArgumentException
+        ("matrixes must have the same number of rows when combining horizontally");
+    }
+    ArrayList<Vector> resultCols = new ArrayList<Vector>();
+    for (int c = 0; c < A.n(); c++){
+      resultCols.add(A.col(c));
+    }
+    for (int c = 0; c < B.n(); c++){
+      resultCols.add(B.col(c));
+    }
+    return new Matrix(resultCols);
+  }
+
   public Matrix pow(double n){
     n = Math.round(n);
     if (n == 1){
       return this;
     }
     return this.mult(this.pow(n-1));
+  }
+
+  public Matrix coVarianceMatrix(){
+    return mult(this.transpose());
+  }
+
+  public Matrix ref(){
+    if (isZero() || m() == 0){
+      return this;
+    }else{
+      Matrix copy = this.copy();
+      int c;
+      for (c = 0; c < n(); c++){
+        if (! col(c).isZero()){
+          if (col(c).get(0) == 0){
+            for (int r = 0; r < m(); r++){
+              if (col(c).get(r) != 0){
+                copy.swapRows(0, r);
+              }
+            }
+          }
+          break;
+        }
+      }
+      copy.scaleRow(0, 1.0 / copy.col(c).get(0));
+      copy.vals[0][c] = 1.0; //fail-safe for double arithmetic
+      for (int r = 1; r < m(); r++){
+        copy.combineRows(r, 0, copy.col(c).get(r) * -1);
+        copy.vals[r][c] = 0.0; //fail-safe for double arithmetic
+      }
+      Matrix thisStep = copy.submatrix(0, 1, 0, n());
+      Matrix nextStep = copy.submatrix(1, 0);
+      return combineVertically(thisStep, nextStep.ref()); // recursion
+    }
+  }
+
+  public Matrix rref(){
+    if (isZero()){
+      return this;
+    }
+    Matrix refed = this.ref();
+    int[][] pivots = new int[0][0];
+    for (int r = 0; r < m(); r++){
+      for (int c = 0; c < n(); c++){
+        if (refed.vals[r][c] != 0.0){
+          if (refed.vals[r][c] != 1.0){
+            throw new IllegalStateException
+              ("REF did not properly make all row pivots equal to one; row pivot: "+vals[r][c]);
+          }else{
+            int[] pivotCoords = new int[2];
+            pivotCoords[0] = r;
+            pivotCoords[1] = c;
+            pivots = aryAppend(pivots, pivotCoords);
+            c = n();
+          }
+        }
+      }
+    }
+    return refed.rrefAlg(pivots);
+  }
+
+  private Matrix rrefAlg(int[][] pivots){
+    if (pivots.length == 0){
+      return this;
+    }
+    for (int p = pivots.length-1; p >= 0; p--){
+      int c = pivots[p][1];
+      int rPivot = pivots[p][0];
+      for (int r = rPivot-1; r >= 0; r--){
+        combineRows(r, rPivot, -1 * this.col(c).get(r));
+        vals[r][c] = 0.0; //fail-safe for double arithmetic
+      }
+    }
+    return this;
+  }
+
+  private void combineRows(int addedTo, int adding, double scalar){
+    if (addedTo == adding){
+      throw new IllegalArgumentException("cannot combine a row with itself");
+    }
+    for (int c = 0; c < n(); c++){
+      vals[addedTo][c] += vals[adding][c] * scalar;
+    }
+  }
+
+  private void combineRows(int added, int adding){
+    combineRows(added, adding, 1);
+  }
+
+  private void scaleRow(int row, double scalar){
+    for (int c = 0; c < n(); c++){
+      vals[row][c] *= scalar;
+    }
+  }
+
+  private void swapRows(int rowI1, int rowI2){
+    if (rowI1 != rowI2){
+      double[] row1 = vals[rowI1];
+      double[] row2 = vals[rowI2];
+      vals[rowI1] = row2;
+      vals[rowI2] = row1;
+    }
   }
 
   public String toString(){
@@ -124,8 +261,28 @@ public class Matrix{
     return result;
   }
 
-  private Matrix copy(){
-    return new Matrix(this.vals);
+  public Matrix copy(){
+    Matrix copy = new Matrix(m(), n());
+    for (int r = 0; r < m(); r++){
+      for (int c = 0; c < n(); c++){
+        copy.vals[r][c] = this.vals[r][c];
+      }
+    }
+    return copy;
+  }
+
+  public static Matrix randomMatrix(int m, int n, double min, double max){
+    Matrix random = new Matrix(m, n);
+    for (int r = 0; r < m; r++){
+      for (int c = 0; c < n; c++){
+        random.vals[r][c] = (max - min) * Math.random() + min;
+      }
+    }
+    return random;
+  }
+
+  public static Matrix randomMatrix(int m, int n){
+    return randomMatrix(m, n, -10, 10);
   }
 
   public void scale(double k){
@@ -144,6 +301,19 @@ public class Matrix{
     }
   }
 
+  public Matrix add(Matrix m){
+    if (m() != m.m() || n() != m.n()){
+      throw new IllegalArgumentException("Matrices must have the same dimensions to add");
+    }
+    Matrix result = new Matrix(m(), n());
+    for (int r = 0; r < m(); r++){
+      for (int c = 0; c < n(); c++){
+        result.vals[r][c] = this.get(r,c) + m.get(r,c);
+      }
+    }
+    return result;
+  }
+
   public void addTo(Matrix m){
     if (m() != m.m() || n() != m.n()){
       throw new IllegalArgumentException("Matrices must have the same dimensions to add");
@@ -159,10 +329,24 @@ public class Matrix{
     Matrix T = new Matrix(n(), m());
     for (int r = 0; r < m(); r++){
       for (int c = 0; c < n(); c++){
-        T.vals[c][r] = vals[r][c];
+        T.vals[c][r] = this.vals[r][c];
       }
     }
     return T;
+  }
+
+  public Matrix submatrix(int r1, int r2, int c1, int c2){
+    Matrix result = new Matrix(r2-r1, c2-c1);
+    for (int r = r1; r < r2; r++){
+      for (int c = c1; c < c2; c++){
+        result.vals[r-r1][c-c1] = this.vals[r][c];
+      }
+    }
+    return result;
+  }
+
+  public Matrix submatrix(int r1, int c1){
+    return submatrix(r1, m(), c1, n());
   }
 
   public double sum(){
@@ -179,11 +363,23 @@ public class Matrix{
     for (double[] row : vals){
       for (double val : row){
         if (val == 0)
-        return true;
+          return true;
       }
     }
     return false;
   }
+
+  protected boolean isZero(){
+    for (double[] row : vals){
+      for (double val : row){
+        if (val != 0)
+          return false;
+      }
+    }
+    return true;
+  }
+
+  // Mathematical operations //
 
   protected static double round(double x, int n){
     return Math.round(Math.pow(10, n) * x) / Math.pow(10,n);
@@ -191,6 +387,77 @@ public class Matrix{
 
   protected static double round(double x){
     return round(x, DEFAULT_ROUND);
+  }
+
+  protected static boolean numInRange(double x, double lo, double hi){
+    return ((x >= lo) && (x <= hi));
+  }
+
+  protected static boolean roughlyEquals(double x, double t, int n){
+    return numInRange(x, t - Math.pow(10,n), t + Math.pow(10,n));
+  }
+
+  protected static boolean roughlyEquals(double x, double t){
+    return roughlyEquals(x, t, -1 * DEFAULT_ROUND);
+  }
+
+  // Array operations //
+
+  protected static void aryAppend(double[] ary, double newDouble){
+    double[] result = new double[ary.length+1];
+    for (int i = 0; i < ary.length; i++){
+      result[i] = ary[i];
+    }
+    result[ary.length] = newDouble;
+    ary = result;
+  }
+
+  protected static void aryAppend(int[] ary, int newInt){
+    int[] result = new int[ary.length+1];
+    for (int i = 0; i < ary.length; i++){
+      result[i] = ary[i];
+    }
+    result[ary.length] = newInt;
+    ary = result;
+  }
+
+  protected static int[][] aryAppend(int[][] ary, int[] newIntAry){
+    if (ary.length == 0){
+      int[][] result = new int[1][newIntAry.length];
+      result[0] = newIntAry;
+      return result;
+    }else{
+      int[][] result = new int[ary.length+1][ary[0].length];
+      for (int i = 0; i < ary.length; i++){
+        result[i] = ary[i];
+      }
+      result[ary.length] = newIntAry;
+      return result;
+    }
+  }
+
+  protected static void aryRemoveLast(double[] ary){
+    double[] result = new double[ary.length-1];
+    for (int i = 0; i < result.length; i++){
+      result[i] = ary[i];
+    }
+    ary = result;
+  }
+
+  protected static void aryRemoveLast(int[] ary){
+    int[] result = new int[ary.length-1];
+    for (int i = 0; i < result.length; i++){
+      result[i] = ary[i];
+    }
+    ary = result;
+  }
+
+  protected static int[][] aryRemoveLast(int[][] ary){
+    int[][] result = new int[ary.length-1][ary[0].length];
+    for (int i = 0; i < result.length; i++){
+      result[i] = ary[i];
+    }
+    return result;
   }
 
 }
