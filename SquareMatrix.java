@@ -95,7 +95,7 @@ public class SquareMatrix extends Matrix{
 
   private double[] calcEigenvals(double range, double step){
     double[] result = new double[0];
-    for (double lambda = -1 * range; lambda <= range; lambda += step){
+    for (double lambda = range; lambda >= -1 * range; lambda -= step){
       SquareMatrix characteristicEquationMatrix = new Identity(dim());
       characteristicEquationMatrix.scale(-1*lambda);
       characteristicEquationMatrix.addTo(this);
@@ -117,12 +117,24 @@ public class SquareMatrix extends Matrix{
     }
   }
 
-  public Vector getEigenvector(int v){
+  public Eigenvector getEigenvector(int v){
     if (! eigenCalced){
       calcEigenvectors();
       this.eigenCalced = true;
     }
     return eigenvectors.get(v);
+  }
+
+  ArrayList<Eigenvector> getEigenvectors(){
+    if (! eigenCalced){
+      calcEigenvectors();
+      this.eigenCalced = true;
+    }
+    return eigenvectors;
+  }
+
+  public SquareMatrix add(Matrix other){
+    return super.add(other).squareCopy();
   }
 
 }

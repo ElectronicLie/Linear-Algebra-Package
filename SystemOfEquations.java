@@ -16,7 +16,7 @@ public class SystemOfEquations{
   }
 
   private void solve(){
-    rrefed = matrix.rref();
+    Matrix rrefed = matrix.rref();
     solution = rrefed.col(rrefed.n()-1);
   }
 

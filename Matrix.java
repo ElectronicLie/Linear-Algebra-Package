@@ -122,8 +122,9 @@ public class Matrix{
     return this.mult(this.pow(n-1));
   }
 
-  public Matrix coVarianceMatrix(){
-    return mult(this.transpose());
+  public SquareMatrix coVarianceMatrix(){
+    Matrix coV = mult(this.transpose());
+    return coV.squareCopy();
   }
 
   public Matrix ref(){
@@ -224,6 +225,35 @@ public class Matrix{
     }
   }
 
+  public void meanCenterColumns(){
+    double colMean = 0;
+    for (int c = 0; c < n(); c++){
+      for (int r = 0; r < m(); r++){
+        colMean += vals[r][c];
+      }
+      colMean /= n();
+      for (int r = 0; r < m(); r++){
+        vals[r][c] -= colMean;
+      }
+    }
+  }
+
+  public Eigenvector principalComponent(int n){ // i.e. principal axis
+    SquareMatrix coV = this.coVarianceMatrix();
+    try{
+      return coV.getEigenvector(n-1); // n = 1 for first principal component
+    }catch(ArrayIndexOutOfBoundsException e){
+      throw new ArrayIndexOutOfBoundsException("matrix has less than " + 1 + " (not unique) eigenvectors");
+    }
+  }
+
+  public ArrayList<Eigenvector> pca(){
+    SquareMatrix coV = this.coVarianceMatrix();
+    return coV.getEigenvectors();
+  }
+
+  // toString //
+
   public String toString(){
     return toString(DEFAULT_ROUND);
   }
@@ -263,6 +293,19 @@ public class Matrix{
 
   public Matrix copy(){
     Matrix copy = new Matrix(m(), n());
+    for (int r = 0; r < m(); r++){
+      for (int c = 0; c < n(); c++){
+        copy.vals[r][c] = this.vals[r][c];
+      }
+    }
+    return copy;
+  }
+
+  public SquareMatrix squareCopy(){
+    if (m() != n()){
+      throw new IllegalStateException("cannot make a square copy of a non-square matrix");
+    }
+    SquareMatrix copy = new SquareMatrix(m());
     for (int r = 0; r < m(); r++){
       for (int c = 0; c < n(); c++){
         copy.vals[r][c] = this.vals[r][c];
