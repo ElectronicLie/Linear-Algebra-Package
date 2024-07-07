@@ -1,6 +1,7 @@
 package linalg;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class SquareMatrix extends Matrix{
 
@@ -93,21 +94,27 @@ public class SquareMatrix extends Matrix{
     return det(this);
   }
 
-  private double[] calcEigenvals(double range, double step){
+  private double[] calcEigenvals(double range, int stepPowerOfTen){
     double[] result = new double[0];
+    double step = Math.pow(10, stepPowerOfTen);
     for (double lambda = range; lambda >= -1 * range; lambda -= step){
+      lambda = Matrix.round(lambda, -1 * stepPowerOfTen);
+      // System.out.println(lambda);
       SquareMatrix characteristicEquationMatrix = new Identity(dim());
       characteristicEquationMatrix.scale(-1*lambda);
       characteristicEquationMatrix.addTo(this);
-      if (Matrix.roughlyEquals(characteristicEquationMatrix.det(), 0, -5)){
-        aryAppend(result, lambda);
+      double determinant = characteristicEquationMatrix.det();
+      boolean roughlyZero = Matrix.roughlyEquals(determinant, 0, step);
+      if (roughlyZero){
+        result = aryAppend(result, lambda);
       }
     }
+    System.out.println("eigenvals:"+Arrays.toString(result));
     return result;
   }
 
   private double[] calcEigenvals(){
-    return calcEigenvals(Math.pow(10,3), Math.pow(10,-3));
+    return calcEigenvals(Math.pow(10,3), -3);
   }
 
   private void calcEigenvectors(){

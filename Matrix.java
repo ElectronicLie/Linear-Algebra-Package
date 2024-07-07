@@ -124,6 +124,7 @@ public class Matrix{
 
   public SquareMatrix coVarianceMatrix(){
     Matrix coV = mult(this.transpose());
+    coV.meanCenterColumns();
     return coV.squareCopy();
   }
 
@@ -169,6 +170,7 @@ public class Matrix{
           if (refed.vals[r][c] != 1.0){
             throw new IllegalStateException
               ("REF did not properly make all row pivots equal to one; row pivot: "+vals[r][c]);
+                // for programmer
           }else{
             int[] pivotCoords = new int[2];
             pivotCoords[0] = r;
@@ -235,6 +237,7 @@ public class Matrix{
       for (int r = 0; r < m(); r++){
         vals[r][c] -= colMean;
       }
+      colMean = 0;
     }
   }
 
@@ -247,9 +250,30 @@ public class Matrix{
     }
   }
 
-  public ArrayList<Eigenvector> pca(){
+  public ArrayList<Eigenvector> allPrincipalComponents(){
     SquareMatrix coV = this.coVarianceMatrix();
     return coV.getEigenvectors();
+  }
+
+  public Vector weightedAverageOfPrincipalComponents(){
+    ArrayList<Eigenvector> pca = allPrincipalComponents();
+    Vector mu;
+    try{
+      mu = new Vector(pca.get(0).dim());
+    }catch(ArrayIndexOutOfBoundsException e){
+      throw new IllegalStateException
+        ("cannot get weighted average of principal components when matrix has no eigenvectors");
+    }
+    Eigenvector pc;
+    double eigenvalsSum = 0;
+    for (int i = 0; i < pca.size(); i++){
+      pc = pca.get(i);
+      eigenvalsSum += pc.getEigenvalue();
+      pc.scale(pc.getEigenvalue());
+      mu.addTo(pc);
+    }
+    mu.scale(1.0 / eigenvalsSum);
+    return mu;
   }
 
   // toString //
@@ -436,23 +460,23 @@ public class Matrix{
     return ((x >= lo) && (x <= hi));
   }
 
-  protected static boolean roughlyEquals(double x, double t, int n){
-    return numInRange(x, t - Math.pow(10,n), t + Math.pow(10,n));
+  public static boolean roughlyEquals(double x, double t, double margin){
+    return numInRange(x, t - margin, t + margin);
   }
 
-  protected static boolean roughlyEquals(double x, double t){
-    return roughlyEquals(x, t, -1 * DEFAULT_ROUND);
+  public static boolean roughlyEquals(double x, double t){
+    return roughlyEquals(x, t, Math.pow(10,-1 * DEFAULT_ROUND));
   }
 
   // Array operations //
 
-  protected static void aryAppend(double[] ary, double newDouble){
+  protected static double[] aryAppend(double[] ary, double newDouble){
     double[] result = new double[ary.length+1];
     for (int i = 0; i < ary.length; i++){
       result[i] = ary[i];
     }
     result[ary.length] = newDouble;
-    ary = result;
+    return result;
   }
 
   protected static void aryAppend(int[] ary, int newInt){

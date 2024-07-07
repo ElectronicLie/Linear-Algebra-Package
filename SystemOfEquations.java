@@ -24,4 +24,8 @@ public class SystemOfEquations{
     return solution;
   }
 
+  public String toString(){
+    return matrix.toString();
+  }
+
 }
