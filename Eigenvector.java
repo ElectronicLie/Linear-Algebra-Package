@@ -13,6 +13,8 @@ public class Eigenvector extends Vector{
     SquareMatrix characteristicEqMatrix = M.add(identity);
     SystemOfEquations eq = new SystemOfEquations(characteristicEqMatrix);
     eq.addZeroConstants();
+    eq.makeFirstVariableOne();
+    System.out.println(eq.solution());
     this.vals = eq.solution().vals;
   }
 
@@ -21,7 +23,7 @@ public class Eigenvector extends Vector{
   }
 
   public String toString(){
-    return super.toString() + "\neigenvalue: " + eigenval;
+    return "\n"+super.toString() + "eigenvalue: " + eigenval+"\n";
   }
 
 }

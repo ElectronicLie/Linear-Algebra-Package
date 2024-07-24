@@ -105,7 +105,12 @@ public class SquareMatrix extends Matrix{
     Polynomial result = new Polynomial("λ");
     for (int c = 0; c < dim(); c++){
       Minor minor = new Minor(this, 0, c);
-      Polynomial part = minor.characteristicPolynomial().scale(get(0,c));
+      Polynomial part = minor.characteristicPolynomial();
+      if (c == 0){
+        part = part.mult(new Polynomial(new double[] {get(0,0), -1}, "λ"));
+      }else{
+        part = part.scale(get(0,c));
+      }
       if (c % 2 == 1)
         part = part.scale(-1);
       result = result.add(part);
@@ -114,6 +119,7 @@ public class SquareMatrix extends Matrix{
   }
 
   private void calcEigenvectors(){
+    this.eigenvectors = new ArrayList<Eigenvector>();
     Polynomial charPoly = characteristicPolynomial();
     double[] eigenvals = charPoly.roots();
     for (int e = 0; e < eigenvals.length; e++){
@@ -151,8 +157,22 @@ public class SquareMatrix extends Matrix{
     return random;
   }
 
+  public static SquareMatrix randomMatrix(int dim, double min, double max, int p){
+    SquareMatrix random = new SquareMatrix(dim);
+    for (int r = 0; r < dim; r++){
+      for (int c = 0; c < dim; c++){
+        random.vals[r][c] = Matrix.round((max - min) * Math.random() + min, p);
+      }
+    }
+    return random;
+  }
+
   public static SquareMatrix randomMatrix(int dim){
-    return randomMatrix(dim, -10, 10);
+    return randomMatrix(dim, -10.0, 10.0);
+  }
+
+  public static SquareMatrix randomMatrix(int dim, int p){
+    return randomMatrix(dim, -10.0, 10.0, p);
   }
 
 }

@@ -6,7 +6,7 @@ public class Matrix{
 
   protected double[][] vals;
 
-  static final int DEFAULT_ROUND = 3;
+  static final int DEFAULT_ROUND = -3;
 
   public Matrix(){}
 
@@ -291,7 +291,7 @@ public class Matrix{
     for (int c = 0; c < n(); c++){
       colMaxChars[c] = 0;
       for (int r = 0; r < m(); r++){
-        rounded = Math.round(Math.pow(10,n) * get(r,c)) / Math.pow(10,n);
+        rounded = round(get(r,c));
         cur = rounded + "";
         curChars = cur.length();
         if (curChars > colMaxChars[c]){
@@ -302,7 +302,7 @@ public class Matrix{
     for (int r = 0; r < m(); r++){
       result += "[ ";
       for (int c = 0; c < n(); c++){
-        rounded = Math.round(Math.pow(10,n) * get(r,c)) / Math.pow(10,n);
+        rounded = round(get(r,c));
         cur = rounded + "";
         curChars = cur.length();
         for (int i = 0; i < colMaxChars[c] - curChars; i++){
@@ -348,8 +348,22 @@ public class Matrix{
     return random;
   }
 
+  public static Matrix randomMatrix(int m, int n, double min, double max, int p){
+    Matrix random = new Matrix(m, n);
+    for (int r = 0; r < m; r++){
+      for (int c = 0; c < n; c++){
+        random.vals[r][c] = round((max - min) * Math.random() + min, p);
+      }
+    }
+    return random;
+  }
+
   public static Matrix randomMatrix(int m, int n){
     return randomMatrix(m, n, -10, 10);
+  }
+
+  public static Matrix randomMatrix(int m, int n, int p){
+    return randomMatrix(m, n, -10, 10, p);
   }
 
   public void scale(double k){
@@ -448,8 +462,8 @@ public class Matrix{
 
   // Mathematical operations //
 
-  protected static double round(double x, int n){
-    return Math.round(Math.pow(10, n) * x) / Math.pow(10,n);
+  public static double round(double x, int n){
+    return Math.round(Math.pow(10, -1*n) * x) * Math.pow(10, n);
   }
 
   protected static double round(double x){

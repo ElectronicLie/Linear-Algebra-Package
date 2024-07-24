@@ -1,5 +1,8 @@
 package linalg;
+
 import java.util.ArrayList;
+import java.util.Arrays;
+import polynomials.*;
 
 public class Tester{
 
@@ -17,9 +20,13 @@ public class Tester{
     // System.out.println(pca);
     // System.out.println(Matrix.roughlyEquals(0.7, 0, 1));
 
-    SquareMatrix m = SquareMatrix.randomMatrix(8);
-    System.out.println(m);
-    System.out.println(m.characteristicPolynomial());
+    System.out.println(Matrix.round(3.04,-2));
+
+    SquareMatrix m = SquareMatrix.randomMatrix(3, -1);
+    System.out.println(m.toString(-1));
+    Polynomial charPoly = m.characteristicPolynomial();
+    System.out.println(charPoly.toStringUnRounded());
+    System.out.println(Arrays.toString(charPoly.roots()));
     System.out.println(m.getEigenvectors());
 
   }
