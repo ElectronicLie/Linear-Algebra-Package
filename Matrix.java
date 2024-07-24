@@ -468,6 +468,16 @@ public class Matrix{
     return roughlyEquals(x, t, Math.pow(10,-1 * DEFAULT_ROUND));
   }
 
+  public static int sign(double x){
+    if (x < 0){
+      return -1;
+    }else if (x > 0){
+      return 1;
+    }else{
+      return 0;
+    }
+  }
+
   // Array operations //
 
   protected static double[] aryAppend(double[] ary, double newDouble){
@@ -525,6 +535,35 @@ public class Matrix{
       result[i] = ary[i];
     }
     return result;
+  }
+
+  public static boolean aryContains(double[] ary, double d){
+    for (double item : ary){
+      if (item == d){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  protected static boolean aryContains(int[][] ary, int[] op){
+    for (int[] arr : ary){
+      for (int i = 0; i < arr.length; i++){
+        if (arr[i] != op[i]){
+          break;
+        }
+        if (i == arr.length-1){
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  // logical operations //
+
+  public static boolean xor(boolean p, boolean q){
+    return ((! p) && q) || (p && (! q));
   }
 
 }
