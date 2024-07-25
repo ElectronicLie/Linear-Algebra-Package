@@ -18,6 +18,18 @@ public class Vector extends Matrix{
     this.ary = ary;
   }
 
+  public Vector(int[] intAry){
+    double[] ary = new double[intAry.length];
+    for (int i = 0; i < intAry.length; i++){
+      ary[i] = (double)(intAry[i]);
+    }
+    this.vals = new double[ary.length][1];
+    for (int i = 0; i < ary.length; i++){
+      vals[i][0] = ary[i];
+    }
+    this.ary = ary;
+  }
+
   public Vector(int dim){
     vals = new double[dim][1];
     ary = new double[dim];

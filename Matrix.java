@@ -509,13 +509,22 @@ public class Matrix{
     return result;
   }
 
-  protected static void aryAppend(int[] ary, int newInt){
+  protected static int[] aryAppend(int[] ary, int newInt){
     int[] result = new int[ary.length+1];
     for (int i = 0; i < ary.length; i++){
       result[i] = ary[i];
     }
     result[ary.length] = newInt;
-    ary = result;
+    return result;
+  }
+
+  protected static String[] aryAppend(String[] ary, String str){
+    String[] result = new String[ary.length+1];
+    for (int i = 0; i < ary.length; i++){
+      result[i] = ary[i];
+    }
+    result[ary.length] = str;
+    return result;
   }
 
   protected static int[][] aryAppend(int[][] ary, int[] newIntAry){
@@ -560,6 +569,15 @@ public class Matrix{
   public static boolean aryContains(double[] ary, double d){
     for (double item : ary){
       if (item == d){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public static boolean aryContains(String[] ary, String s){
+    for (String str : ary){
+      if (str.equals(s)){
         return true;
       }
     }
