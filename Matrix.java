@@ -1,6 +1,9 @@
 package linalg;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class Matrix{
 
@@ -463,7 +466,10 @@ public class Matrix{
   // Mathematical operations //
 
   public static double round(double x, int n){
-    return Math.round(Math.pow(10, -1*n) * x) * Math.pow(10, n);
+    // return Math.round(Math.pow(10, -1*n) * x) * Math.pow(10, n);
+    BigDecimal b = new BigDecimal(Double.toString(x));
+    b = b.setScale(-1*n, RoundingMode.HALF_UP);
+    return b.doubleValue();
   }
 
   protected static double round(double x){

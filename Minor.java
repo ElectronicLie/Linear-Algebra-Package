@@ -102,10 +102,14 @@ public class Minor extends SquareMatrix{
       }
     }
     Polynomial result = new Polynomial("λ");
+    // System.out.println("rows left: " + m() + "\n");
     for (int c = 0; c < dim(); c++){
       Minor next = nextMinor(0,c);
       // System.out.println(next);
       Polynomial part = next.characteristicPolynomial(); //recursion
+      // System.out.println("\tcolumn "+c + " -\n");
+      // System.out.println("\t\tminor:\n\t\t"+next);
+      // System.out.println("\t\tminor's char. poly.:\n\t\t"+part+"\n");
       if (Matrix.aryContains(mainDiagonalCoords, new int[] {0, c})){
         part = part.mult(new Polynomial(new double[] {this.vals[0][c], -1}, "λ"));
       }else{
@@ -114,7 +118,9 @@ public class Minor extends SquareMatrix{
       if (c % 2 == 1){
         part = part.scale(-1);
       }
+      // System.out.println("\t\tchar. poly. after mult. by top entry:\n\t\t"+part+"\n");
       result = result.add(part);
+      // System.out.println("\t\t\tresult after adding char. poly.:\n\t\t\t"+result);
     }
     return result;
   }

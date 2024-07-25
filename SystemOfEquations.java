@@ -12,14 +12,18 @@ public class SystemOfEquations{
 
   public void addZeroConstants(){
     matrix = Matrix.combineHorizontally(matrix, Vector.zero(matrix.m()));
+    // System.out.println("system: \n"+matrix);
     solve();
     // System.out.println("\n"+"System of equations:"+"\n"+this.toString());
     // System.out.println("\n"+"system RREFed:"+"\n"+this.matrix.rref().toString());
   }
 
   public void makeFirstVariableOne(){
+    int noCols = matrix.n();
+    // System.out.println("system: \n"+matrix);
     matrix = matrix.submatrix(1,0);
-    Matrix firstRow = new Matrix(1, matrix.n());
+    // System.out.println("system w/o 1st row: \n"+matrix);
+    Matrix firstRow = new Matrix(1, noCols);
     for (int c = 0; c < firstRow.n(); c++){
       if (c == 0 || c == firstRow.n()-1){
         firstRow.vals[0][c] = 1;
@@ -27,7 +31,9 @@ public class SystemOfEquations{
         firstRow.vals[0][c] = 0;
       }
     }
+    // System.out.println("firstRow: \n"+firstRow);
     matrix = Matrix.combineVertically(firstRow, matrix);
+    // System.out.println("system: \n"+matrix);
     solve();
   }
 
