@@ -4,14 +4,20 @@ public class MarkovChain{
 
   private Network network;
   private StochasticMatrix matrix;
+  private Vector steadyState;
 
   public MarkovChain(Network network){
     this.network = network;
     matrix = new StochasticMatrix(network);
+    steadyState = calcSteadyState();
   }
 
-  public Vector steadyState(){
+  private Vector calcSteadyState(){
     return matrix.pow(1023).col(0);
+  }
+
+  public Vector getSteadyState(){
+    return steadyState;
   }
 
   public Vector step(Vector initialState, int n){
@@ -19,7 +25,7 @@ public class MarkovChain{
   }
 
   public String steadyStateToString(int p){
-    Vector v = steadyState();
+    Vector v = getSteadyState();
     String result = "";
     for (int n = 0; n < network.size(); n++){
       result += "[ " + Matrix.round(v.get(n), p) + " ] " + network.getNode(n).getName() + "\n";
@@ -36,7 +42,7 @@ public class MarkovChain{
     for (int n = 0; n < network.size(); n++){
       nodeNames[n] = network.getNode(n).getName();
     }
-    Vector v = steadyState();
+    Vector v = this.steadyState;
     for (int i = v.dim()-1; i >= 0; i--){ //bubble sort
       for (int j = 0; j < i; j++){
         if (v.get(j) > v.get(j+1)){

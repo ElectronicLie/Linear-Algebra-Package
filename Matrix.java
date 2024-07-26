@@ -279,6 +279,38 @@ public class Matrix{
     return mu;
   }
 
+  public boolean equals(Matrix other){
+    if (n() != other.n() || m() != other.m()){
+      return false;
+    }
+    for (int r = 0; r < m(); r++){
+      for (int c = 0; c < n(); c++){
+        if (vals[r][c] != other.vals[r][c]){
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  public boolean roughlyEquals(Matrix other, double margin){
+    if (n() != other.n() || m() != other.m()){
+      return false;
+    }
+    for (int r = 0; r < m(); r++){
+      for (int c = 0; c < n(); c++){
+        if (! roughlyEquals(vals[r][c], other.vals[r][c], margin)){
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  public boolean roughlyEquals(Matrix other){
+    return roughlyEquals(other, Math.pow(10, DEFAULT_ROUND));
+  }
+
   // toString //
 
   public String toString(){
@@ -500,7 +532,7 @@ public class Matrix{
 
   // Array operations //
 
-  protected static double[] aryAppend(double[] ary, double newDouble){
+  public static double[] aryAppend(double[] ary, double newDouble){
     double[] result = new double[ary.length+1];
     for (int i = 0; i < ary.length; i++){
       result[i] = ary[i];
@@ -509,7 +541,7 @@ public class Matrix{
     return result;
   }
 
-  protected static int[] aryAppend(int[] ary, int newInt){
+  public static int[] aryAppend(int[] ary, int newInt){
     int[] result = new int[ary.length+1];
     for (int i = 0; i < ary.length; i++){
       result[i] = ary[i];
@@ -518,7 +550,7 @@ public class Matrix{
     return result;
   }
 
-  protected static String[] aryAppend(String[] ary, String str){
+  public static String[] aryAppend(String[] ary, String str){
     String[] result = new String[ary.length+1];
     for (int i = 0; i < ary.length; i++){
       result[i] = ary[i];
@@ -527,7 +559,7 @@ public class Matrix{
     return result;
   }
 
-  protected static int[][] aryAppend(int[][] ary, int[] newIntAry){
+  public static int[][] aryAppend(int[][] ary, int[] newIntAry){
     if (ary.length == 0){
       int[][] result = new int[1][newIntAry.length];
       result[0] = newIntAry;
@@ -542,7 +574,7 @@ public class Matrix{
     }
   }
 
-  protected static void aryRemoveLast(double[] ary){
+  public static void aryRemoveLast(double[] ary){
     double[] result = new double[ary.length-1];
     for (int i = 0; i < result.length; i++){
       result[i] = ary[i];
@@ -550,7 +582,7 @@ public class Matrix{
     ary = result;
   }
 
-  protected static void aryRemoveLast(int[] ary){
+  public static void aryRemoveLast(int[] ary){
     int[] result = new int[ary.length-1];
     for (int i = 0; i < result.length; i++){
       result[i] = ary[i];
@@ -558,7 +590,7 @@ public class Matrix{
     ary = result;
   }
 
-  protected static int[][] aryRemoveLast(int[][] ary){
+  public static int[][] aryRemoveLast(int[][] ary){
     int[][] result = new int[ary.length-1][ary[0].length];
     for (int i = 0; i < result.length; i++){
       result[i] = ary[i];
@@ -584,7 +616,7 @@ public class Matrix{
     return false;
   }
 
-  protected static boolean aryContains(int[][] ary, int[] op){
+  public static boolean aryContains(int[][] ary, int[] op){
     for (int[] arr : ary){
       for (int i = 0; i < arr.length; i++){
         if (arr[i] != op[i]){
