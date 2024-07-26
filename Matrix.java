@@ -126,8 +126,10 @@ public class Matrix{
   }
 
   public SquareMatrix coVarianceMatrix(){
-    Matrix coV = mult(this.transpose());
-    coV.meanCenterColumns();
+    Matrix coV = this;
+    coV.meanCenterRows();
+    coV = coV.mult(coV.transpose());
+    coV.scale(1.0/(double)(this.n()));
     return coV.squareCopy();
   }
 
@@ -241,6 +243,20 @@ public class Matrix{
         vals[r][c] -= colMean;
       }
       colMean = 0;
+    }
+  }
+
+  public void meanCenterRows(){
+    double rowMean = 0;
+    for (int r = 0; r < m(); r++){
+      for (int c = 0; c < n(); c++){
+        rowMean += vals[r][c];
+      }
+      rowMean /= n();
+      for (int c = 0; c < n(); c++){
+        vals[r][c] -= rowMean;
+      }
+      rowMean = 0;
     }
   }
 
