@@ -9,6 +9,7 @@ public class MarkovChain{
   public MarkovChain(Network network){
     this.network = network;
     matrix = new StochasticMatrix(network);
+    // System.out.println("stochastic matrix:\n"+matrix);
     steadyState = calcSteadyState();
   }
 

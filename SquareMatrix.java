@@ -99,30 +99,8 @@ public class SquareMatrix extends Matrix{
   }
 
   public Polynomial characteristicPolynomial(){
-    if (dim() == 1){
-      return new Polynomial(new double[] {get(0,0), -1}, "λ");
-    }
-    Polynomial result = new Polynomial("λ");
-    // System.out.println("rows left: " + m() + "\n");
-    for (int c = 0; c < dim(); c++){
-      Minor minor = new Minor(this, 0, c);
-      Polynomial part = minor.characteristicPolynomial();
-      // System.out.println("\tcolumn "+c + " -\n");
-      // System.out.println("\t\tminor:\n\t\t"+minor);
-      // System.out.println("\t\tminor's char. poly.:\n\t\t"+part+"\n");
-      if (c == 0){
-        part = part.mult(new Polynomial(new double[] {get(0,c), -1}, "λ"));
-      }else{
-        part = part.scale(get(0,c));
-      }
-      if (c % 2 == 1){
-        part = part.scale(-1);
-        // System.out.println("scaled by -1");
-      }
-      // System.out.println("\t\tchar. poly. after mult. by top entry:\n\t\t"+part+"\n");
-      result = result.add(part);
-      // System.out.println("\t\t\tresult after adding char. poly.:\n\t\t\t"+result);
-    }
+    Minor minor = new Minor(this);
+    Polynomial result = minor.characteristicPolynomial();
     return result;
   }
 

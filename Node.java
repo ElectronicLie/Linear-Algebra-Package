@@ -61,8 +61,7 @@ public class Node{
           edgeVals = evenEdgeValsForActiveNeighbors();
           updateEdges();
         }
-      }
-      if (network.isAdjacency()){
+      }else if (network.isAdjacency()){
         edgeVals = adjacentEdgeValsForActiveNeighbors();
         updateEdges();
         int indexOfSelf = aryIndexOf(other.nabrs, getName());
@@ -73,6 +72,8 @@ public class Node{
           edgeVals = adjacentEdgeValsForActiveNeighbors();
           updateEdges();
         }
+      }else{
+        throw new IllegalStateException("network is neither an even network or an adjacency network");
       }
     }
   }

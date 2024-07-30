@@ -223,12 +223,11 @@ public class Matrix{
     }
   }
 
-  private void swapRows(int rowI1, int rowI2){
+  protected void swapRows(int rowI1, int rowI2){
     if (rowI1 != rowI2){
-      double[] row1 = vals[rowI1];
-      double[] row2 = vals[rowI2];
-      vals[rowI1] = row2;
-      vals[rowI2] = row1;
+      double[] temp = vals[rowI1];
+      vals[rowI1] = vals[rowI2];
+      vals[rowI2] = temp;
     }
   }
 
@@ -270,12 +269,16 @@ public class Matrix{
   }
 
   public ArrayList<Eigenvector> allPrincipalComponents(){
+    // System.out.println("PCA is underway");
     SquareMatrix coV = this.coVarianceMatrix();
-    return coV.getEigenvectors();
+    ArrayList<Eigenvector> result = coV.getEigenvectors();
+    // System.out.println("PCA is complete");
+    return result;
   }
 
   public Vector weightedAverageOfPrincipalComponents(){
     ArrayList<Eigenvector> pca = allPrincipalComponents();
+    // System.out.println("weighted average of PCs is being calculated");
     Vector mu;
     try{
       mu = new Vector(pca.get(0).dim());
@@ -292,6 +295,7 @@ public class Matrix{
       mu.addTo(pc);
     }
     mu.scale(1.0 / eigenvalsSum);
+    // System.out.println("weighted average of PCs is complete");
     return mu;
   }
 
@@ -330,10 +334,21 @@ public class Matrix{
   // toString //
 
   public String toString(){
-    return toString(DEFAULT_ROUND);
+    return toString(DEFAULT_ROUND,0);
   }
 
   public String toString(int n){
+    return toString(n, 0);
+  }
+
+  public String toString(int n, int noTabs){
+    String tabs = "";
+    for (int i = 0; i < noTabs; i++){
+      tabs += "\t";
+    }
+    if (m() == 0 && n() == 0){
+      return "[]";
+    }
     String result = "";
     double rounded;
     String cur;
@@ -351,7 +366,7 @@ public class Matrix{
       }
     }
     for (int r = 0; r < m(); r++){
-      result += "[ ";
+      result += tabs+"[ ";
       for (int c = 0; c < n(); c++){
         rounded = round(get(r,c));
         cur = rounded + "";
