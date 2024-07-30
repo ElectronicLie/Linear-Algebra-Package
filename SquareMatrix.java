@@ -98,6 +98,10 @@ public class SquareMatrix extends Matrix{
     return det(this);
   }
 
+  public SquareMatrix luDecomposition(){
+
+  }
+
   public Polynomial characteristicPolynomial(){
     Minor minor = new Minor(this);
     Polynomial result = minor.characteristicPolynomial();
