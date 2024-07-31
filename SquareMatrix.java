@@ -80,32 +80,41 @@ public class SquareMatrix extends Matrix{
     return minor(0, cExc);
   }
 
-  private static double det(SquareMatrix part){
-    if (part.dim() == 1){
-      return part.get(0,0);
-    }
-    double sum = 0;
-    for (int c = 0; c < part.dim(); c++){
-      double minorDet = det(part.minor(c)) * part.get(0,c);
-      if (c % 2 == 1)
-        minorDet *= -1;
-      sum += minorDet;
-    }
-    return sum;
-  }
+  // public double det(){
+  //   if (dim() == 1){
+  //     return get(0,0);
+  //   }
+  //   double sum = 0;
+  //   for (int c = 0; c < dim(); c++){
+  //     double minorDet = det(minor(c)) * get(0,c);
+  //     if (c % 2 == 1)
+  //       minorDet *= -1;
+  //     sum += minorDet;
+  //   }
+  //   return sum;
+  // }
 
   public double det(){
-    return det(this);
+    Matrix l = refUpperTriangular();
+    double product = 1;
+    for (int i = 0; i < l.m(); i++){
+      product *= l.vals[i][i];
+    }
+    return product;
   }
 
-  public SquareMatrix luDecomposition(){
+  // public SquareMatrix luDecomposition(){
+  //
+  // }
 
-  }
+  // public Polynomial characteristicPolynomial(){
+  //   Minor minor = new Minor(this);
+  //   Polynomial result = minor.characteristicPolynomial();
+  //   return result;
+  // }
 
   public Polynomial characteristicPolynomial(){
-    Minor minor = new Minor(this);
-    Polynomial result = minor.characteristicPolynomial();
-    return result;
+
   }
 
   private void calcEigenvectors(){

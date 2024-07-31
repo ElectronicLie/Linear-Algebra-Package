@@ -133,6 +133,35 @@ public class Matrix{
     return coV.squareCopy();
   }
 
+  protected Matrix refUpperTriangular(){ // ref without making pivots 1
+    if (isZero() || m() == 0){
+      return this;
+    }else{
+      Matrix copy = this.copy();
+      int c;
+      for (c = 0; c < n(); c++){
+        if (! col(c).isZero()){
+          if (col(c).get(0) == 0){
+            for (int r = 0; r < m(); r++){
+              if (col(c).get(r) != 0){
+                copy.swapRows(0, r);
+              }
+            }
+          }
+          break;
+        }
+      }
+      copy.vals[0][c] = 1.0; //fail-safe for double arithmetic
+      for (int r = 1; r < m(); r++){
+        copy.combineRows(r, 0, copy.col(c).get(r) * -1);
+        copy.vals[r][c] = 0.0; //fail-safe for double arithmetic
+      }
+      Matrix thisStep = copy.submatrix(0, 1, 0, n());
+      Matrix nextStep = copy.submatrix(1, 0);
+      return combineVertically(thisStep, nextStep.ref()); // recursion
+    }
+  }
+
   public Matrix ref(){
     if (isZero() || m() == 0){
       return this;
@@ -223,7 +252,7 @@ public class Matrix{
     }
   }
 
-  protected void swapRows(int rowI1, int rowI2){
+  public void swapRows(int rowI1, int rowI2){
     if (rowI1 != rowI2){
       double[] temp = vals[rowI1];
       vals[rowI1] = vals[rowI2];
