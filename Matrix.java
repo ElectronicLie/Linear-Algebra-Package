@@ -10,6 +10,7 @@ public class Matrix{
   protected double[][] vals;
 
   static final int DEFAULT_ROUND = -3;
+  static final int DEFAULT_MARGIN = -6;
 
   public Matrix(){}
 
@@ -151,7 +152,7 @@ public class Matrix{
           break;
         }
       }
-      copy.vals[0][c] = 1.0; //fail-safe for double arithmetic
+      // copy.vals[0][c] = 1.0; //fail-safe for double arithmetic
       for (int r = 1; r < m(); r++){
         copy.combineRows(r, 0, copy.col(c).get(r) * -1);
         copy.vals[r][c] = 0.0; //fail-safe for double arithmetic
@@ -188,7 +189,8 @@ public class Matrix{
       }
       Matrix thisStep = copy.submatrix(0, 1, 0, n());
       Matrix nextStep = copy.submatrix(1, 0);
-      return combineVertically(thisStep, nextStep.ref()); // recursion
+      Matrix result = combineVertically(thisStep, nextStep.ref()); // recursion
+      return result;
     }
   }
 
@@ -239,6 +241,10 @@ public class Matrix{
     }
     for (int c = 0; c < n(); c++){
       vals[addedTo][c] += vals[adding][c] * scalar;
+      if (roughlyEquals(vals[addedTo][c], 0, Math.pow(10, DEFAULT_MARGIN))){
+        vals[addedTo][c] = 0;
+        // System.out.println(vals[addedTo][c]);
+      }
     }
   }
 
@@ -549,6 +555,16 @@ public class Matrix{
     for (double[] row : vals){
       for (double val : row){
         if (val != 0)
+          return false;
+      }
+    }
+    return true;
+  }
+
+  protected boolean isRoughlyZero(){
+    for (double[] row : vals){
+      for (double val : row){
+        if (! roughlyEquals(val, 0, Math.pow(10, DEFAULT_MARGIN)));
           return false;
       }
     }

@@ -1,55 +1,55 @@
 package linalg;
 
 import polynomials.*;
+import java.util.Arrays;
 
 public class PolynomialMatrix extends Matrix{
 
-  protected Polynomial[][] vals;
+  protected RationalFraction[][] vals;
 
-  public PolynomialMatrix(Polynomial[][] pVals){
+  public PolynomialMatrix(RationalFraction[][] pVals){
     this.vals = pVals;
   }
 
   public PolynomialMatrix(int rows, int cols){
-    this.vals = new Polynomial[rows][cols];
+    this.vals = new RationalFraction[rows][cols];
   }
 
-  private PolynomialMatrix upperTriangularViaREF(){
+  public int m(){
+    return vals.length;
+  }
+
+  public int n(){
+    if (vals.length == 0){
+      return 0;
+    }
+    return vals[0].length;
+  }
+
+  public PolynomialMatrix upperTriangularViaREF(){
     if (isZero() || m() == 0){
       return this;
     }else{
-      Matrix copy = this.copy();
-      int c;
-      for (c = 0; c < n(); c++){
-        if (! col(c).isZero()){
-          if (col(c).get(0) == 0){
-            for (int r = 0; r < m(); r++){
-              if (col(c).get(r) != 0){
-                copy.swapRows(0, r);
-              }
-            }
-          }
-          break;
+      for (int c = 0; c < n(); c++){
+        for (int r = c+1; r < m(); r++){
+          combineRows(r, c, vals[r][c].scale(-1.0).divide(vals[c][c]));
         }
       }
-      copy.vals[0][c] = 1.0; //fail-safe for double arithmetic
-      for (int r = 1; r < m(); r++){
-        copy.combineRows(r, 0, copy.col(c).get(r) * -1);
-        copy.vals[r][c] = 0.0; //fail-safe for double arithmetic
-      }
-      Matrix thisStep = copy.submatrix(0, 1, 0, n());
-      Matrix nextStep = copy.submatrix(1, 0);
-      return combineVertically(thisStep, nextStep.upperTriangularViaRREF()); // recursion
+      return this;
     }
   }
 
-  public Polynomial det(){
-
+  public RationalFraction mainDiagonalProduct(String symbol){
+    RationalFraction product = new RationalFraction(symbol);
+    for (int d = 0; d < m(); d++){
+      product = product.mult(this.vals[d][d]);
+    }
+    return product;
   }
 
   protected boolean isZero(){
-    for (Polynomial[] row : vals){
-      for (Polynomial val : row){
+    for (RationalFraction[] row : vals){
+      for (RationalFraction val : row){
         if (! val.isZero())
           return false;
       }
@@ -57,17 +57,17 @@ public class PolynomialMatrix extends Matrix{
     return true;
   }
 
-  private void combineRows(int addedTo, int adding, double scalar){
+  private void combineRows(int addedTo, int adding, RationalFraction multiplier){
     if (addedTo == adding){
       throw new IllegalArgumentException("cannot combine a row with itself");
     }
     for (int c = 0; c < n(); c++){
-      vals[addedTo][c] = vals[addedTo][c].add(vals[adding][c].scale(scalar));
+      vals[addedTo][c] = vals[addedTo][c].add(vals[adding][c].mult(multiplier));
     }
   }
 
   private void combineRows(int added, int adding){
-    combineRows(added, adding, 1);
+    combineRows(added, adding, new RationalFraction());
   }
 
   private void scaleRow(int row, double scalar){
@@ -76,12 +76,162 @@ public class PolynomialMatrix extends Matrix{
     }
   }
 
-  // public void swapRows(int rowI1, int rowI2){
-  //   if (rowI1 != rowI2){
-  //     double[] temp = vals[rowI1];
-  //     vals[rowI1] = vals[rowI2];
-  //     vals[rowI2] = temp;
-  //   }
-  // }
+  public PolynomialMatrix copy(){
+    PolynomialMatrix copy = new PolynomialMatrix(m(), n());
+    for (int r = 0; r < m(); r++){
+      for (int c = 0; c < n(); c++){
+        copy.vals[r][c] = this.vals[r][c];
+      }
+    }
+    return copy;
+  }
+
+  public String toString(){
+    return toString(DEFAULT_ROUND,0);
+  }
+
+  public String toString(int n){
+    return toString(n, 0);
+  }
+
+  public String toString(int n, int noTabs){
+    String tabs = "";
+    for (int i = 0; i < noTabs; i++){
+      tabs += "\t";
+    }
+    if (m() == 0 && n() == 0){
+      return "[]";
+    }
+    String result = "";
+    RationalFraction rounded;
+    String cur;
+    int curChars;
+    int[] colMaxChars = new int[n()];
+    for (int c = 0; c < n(); c++){
+      colMaxChars[c] = 0;
+      for (int r = 0; r < m(); r++){
+        rounded = vals[r][c].round(n);
+        cur = rounded.toString();
+        curChars = cur.length();
+        if (curChars > colMaxChars[c]){
+          colMaxChars[c] = curChars;
+        }
+      }
+    }
+    for (int r = 0; r < m(); r++){
+      result += tabs;
+      result += "[ ";
+      for (int c = 0; c < n(); c++){
+        rounded = vals[r][c].round();
+        cur = rounded.toString();
+        curChars = cur.length();
+        for (int i = 0; i < colMaxChars[c] - curChars; i++){
+          cur += " ";
+        }
+        cur += " ";
+        result += cur;
+      }
+      result += "]\n";
+    }
+    return result;
+  }
+
+  public String factorsToString(){
+    return factorsToString(-3);
+  }
+
+  public String factorsToString(int n){
+    return factorsToString(n, 0);
+  }
+
+  public String factorsToString(int n, int noTabs){
+    String tabs = "";
+    for (int i = 0; i < noTabs; i++){
+      tabs += "\t";
+    }
+    if (m() == 0 && n() == 0){
+      return "[]";
+    }
+    String result = "";
+    RationalFraction rounded;
+    String cur;
+    int curChars;
+    int[] colMaxChars = new int[n()];
+    for (int c = 0; c < n(); c++){
+      colMaxChars[c] = 0;
+      for (int r = 0; r < m(); r++){
+        rounded = vals[r][c].round(n);
+        cur = rounded.factorsToString();
+        curChars = cur.length();
+        if (curChars > colMaxChars[c]){
+          colMaxChars[c] = curChars;
+        }
+      }
+    }
+    for (int r = 0; r < m(); r++){
+      result += tabs;
+      result += "[ ";
+      for (int c = 0; c < n(); c++){
+        rounded = vals[r][c].round();
+        cur = rounded.factorsToString();
+        // System.out.println(vals[r][c].factorsToString());
+        curChars = cur.length();
+        for (int i = 0; i < colMaxChars[c] - curChars; i++){
+          cur += " ";
+        }
+        cur += " ";
+        result += cur;
+      }
+      result += "]\n";
+    }
+    return result;
+  }
+
+  public String toStringUnRounded(){
+    return toStringUnRounded(0);
+  }
+
+  public String toStringUnRounded(int noTabs){
+    String tabs = "";
+    for (int i = 0; i < noTabs; i++){
+      tabs += "\t";
+    }
+    if (m() == 0 && n() == 0){
+      return "[]";
+    }
+    String result = "";
+    RationalFraction rounded;
+    String cur;
+    int curChars;
+    int[] colMaxChars = new int[n()];
+    for (int c = 0; c < n(); c++){
+      colMaxChars[c] = 0;
+      for (int r = 0; r < m(); r++){
+        rounded = vals[r][c];
+        cur = rounded.toStringUnRounded();
+        curChars = cur.length();
+        if (curChars > colMaxChars[c]){
+          colMaxChars[c] = curChars;
+        }
+      }
+    }
+    for (int r = 0; r < m(); r++){
+      result += tabs;
+      result += "[ ";
+      for (int c = 0; c < n(); c++){
+        rounded = vals[r][c];
+        cur = rounded.toStringUnRounded();
+        // System.out.println(vals[r][c].factorsToString());
+        curChars = cur.length();
+        for (int i = 0; i < colMaxChars[c] - curChars; i++){
+          cur += " ";
+        }
+        cur += " ";
+        result += cur;
+      }
+      result += "]\n";
+    }
+    return result;
+  }
 
 }

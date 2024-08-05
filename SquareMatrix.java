@@ -113,8 +113,37 @@ public class SquareMatrix extends Matrix{
   //   return result;
   // }
 
-  public Polynomial characteristicPolynomial(){
+  public PolynomialMatrix characteristicEquation(){
+    PolynomialMatrix charEq = new PolynomialMatrix(dim(), dim());
+    for (int r = 0; r < dim(); r++){
+      for (int c = 0; c < dim(); c++){
+        if (r == c){
+          charEq.vals[r][c] = new RationalFraction(new Polynomial(new double[] {vals[r][c],-1}, "L"), "L");
+        }else{
+          charEq.vals[r][c] = new RationalFraction(new Polynomial(new double[] {vals[r][c]}, "L"), "L");
+        }
+      }
+    }
+    return charEq;
+  }
 
+  public Polynomial characteristicPolynomial(){
+    PolynomialMatrix charEq = characteristicEquation();
+    PolynomialMatrix lu = charEq.upperTriangularViaREF();
+    RationalFraction result = lu.mainDiagonalProduct("L");
+    // Polynomial one = new Polynomial(new double[] {1.0});
+    // if (! result.getDenominator().equals(one)){
+    //   throw new IllegalStateException("denominator is complex");
+    // }
+    // System.out.println(charEq);
+    // System.out.println(lu.toStringUnRounded());
+    // System.out.println(lu.factorsToString());
+    // System.out.println(result);
+    // RationalFraction ads = new RationalFraction(new Polynomial(new double[] {-5,1}));
+    // RationalFraction abs = new RationalFraction(
+    //   new Polynomial(new double[] {1}), new Polynomial(new double[] {5,-1}));
+    // System.out.println(ads.mult(abs));
+    return result.getNumerator();
   }
 
   private void calcEigenvectors(){
