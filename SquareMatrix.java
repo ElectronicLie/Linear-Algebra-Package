@@ -151,7 +151,7 @@ public class SquareMatrix extends Matrix{
   private void calcEigenvectors(){
     this.eigenvectors = new ArrayList<Eigenvector>();
     SimpleRationalFraction charPoly = characteristicPolynomial();
-    double[] eigenvals = charPoly.roots();
+    double[] eigenvals = charPoly.roundedRoots();
     for (int e = 0; e < eigenvals.length; e++){
       this.eigenvectors.add(new Eigenvector(this, eigenvals[e]));
     }
