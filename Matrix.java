@@ -134,7 +134,7 @@ public class Matrix{
     return coV.squareCopy();
   }
 
-  protected Matrix refUpperTriangular(){ // ref without making pivots 1
+  protected Matrix refPreservePivots(){ // ref without making pivots 1
     if (isZero() || m() == 0){
       return this;
     }else{

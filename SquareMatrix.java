@@ -95,7 +95,7 @@ public class SquareMatrix extends Matrix{
   // }
 
   public double det(){
-    Matrix l = refUpperTriangular();
+    Matrix l = refPreservePivots();
     double product = 1;
     for (int i = 0; i < l.m(); i++){
       product *= l.vals[i][i];
@@ -118,19 +118,21 @@ public class SquareMatrix extends Matrix{
     for (int r = 0; r < dim(); r++){
       for (int c = 0; c < dim(); c++){
         if (r == c){
-          charEq.vals[r][c] = new RationalFraction(new Polynomial(new double[] {vals[r][c],-1}, "L"), "L");
+          charEq.vals[r][c] = new SimpleRationalFraction
+            (new Polynomial(new double[] {vals[r][c],-1}, "L"), "L");
         }else{
-          charEq.vals[r][c] = new RationalFraction(new Polynomial(new double[] {vals[r][c]}, "L"), "L");
+          charEq.vals[r][c] = new SimpleRationalFraction
+            (new Polynomial(new double[] {vals[r][c]}, "L"), "L");
         }
       }
     }
     return charEq;
   }
 
-  public Polynomial characteristicPolynomial(){
+  public SimpleRationalFraction characteristicPolynomial(){
     PolynomialMatrix charEq = characteristicEquation();
     PolynomialMatrix lu = charEq.upperTriangularViaREF();
-    RationalFraction result = lu.mainDiagonalProduct("L");
+    SimpleRationalFraction result = lu.mainDiagonalProduct("L");
     // Polynomial one = new Polynomial(new double[] {1.0});
     // if (! result.getDenominator().equals(one)){
     //   throw new IllegalStateException("denominator is complex");
@@ -143,12 +145,12 @@ public class SquareMatrix extends Matrix{
     // RationalFraction abs = new RationalFraction(
     //   new Polynomial(new double[] {1}), new Polynomial(new double[] {5,-1}));
     // System.out.println(ads.mult(abs));
-    return result.getNumerator();
+    return result;
   }
 
   private void calcEigenvectors(){
     this.eigenvectors = new ArrayList<Eigenvector>();
-    Polynomial charPoly = characteristicPolynomial();
+    SimpleRationalFraction charPoly = characteristicPolynomial();
     double[] eigenvals = charPoly.roots();
     for (int e = 0; e < eigenvals.length; e++){
       this.eigenvectors.add(new Eigenvector(this, eigenvals[e]));

@@ -37,10 +37,37 @@ public class Tester{
     // System.out.println(Arrays.toString(charPoly.roots()));
     // System.out.println(m.getEigenvectors());
 
-    Matrix m = Matrix.randomMatrix(25,26,0);
-    // SystemOfEquations soe = new SystemOfEquations(m);
-    // System.out.println(soe.solution());
-    System.out.println(m.rref());
+    // Matrix m = Matrix.randomMatrix(25,26,0);
+    // // SystemOfEquations soe = new SystemOfEquations(m);
+    // // System.out.println(soe.solution());
+    // System.out.println(m.rref());
+
+    // SquareMatrix m = SquareMatrix.randomMatrix(3,0);
+    SquareMatrix m = new SquareMatrix(new double[][] {{5,-9,9},{-5,-1,8},{8,5,2}});
+    SquareMatrix r = SquareMatrix.randomMatrix(4,0);
+    SquareMatrix test = m;
+    System.out.println(test);
+    PolynomialMatrix ce = m.characteristicEquation();
+    // System.out.println(ce.factorsToString());
+    System.out.println(ce);
+    PolynomialMatrix lu = ce.upperTriangularViaREF();
+    // System.out.println(lu.factorsToString());
+    System.out.println(lu);
+    SimpleRationalFraction cp = lu.mainDiagonalProduct("L");
+    System.out.println(cp);
+    // SimpleRationalFraction cpp = test.characteristicPolynomial();
+    // System.out.println(cpp+"\n");
+    System.out.println("numerator:\n"+cp.getNumerator().toStringUnRounded());
+    double[] numRts = cp.getNumerator().roots();
+    System.out.println("numerator roots:\n"+Arrays.toString(numRts)+"\n");
+    double[] denRts = cp.getDenominator().roots();
+    System.out.println("denominator roots:\n"+Arrays.toString(denRts)+"\n");
+    double[] rts = cp.roots();
+    System.out.println("rational fraction roots:\n"+Arrays.toString(rts));
+    // System.out.println(test.getEigenvectors());
+
+    // RationalFraction tst = new RationalFraction(new Polynomial(new double[] {3,-1}, "L"), "L");
+    // System.out.println(tst.factorsToString());
 
   }
 
