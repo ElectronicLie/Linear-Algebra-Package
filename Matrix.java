@@ -5,20 +5,24 @@ import java.util.Arrays;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public class Matrix{
+public class Matrix<T implements >{
 
-  protected double[][] vals;
+  // FIELDS //
+
+  protected T[][] vals;
 
   static final int DEFAULT_ROUND = -3;
   static final int DEFAULT_MARGIN = -6;
 
+  // CONSTRUCTORS //
+
   public Matrix(){}
 
   public Matrix(int rows, int cols){
-    vals = new double[rows][cols];
+    vals = new T[rows][cols];
   }
 
-  public Matrix(double[][] vals){
+  public Matrix(T[][] vals){
     this.vals = vals;
   }
 
@@ -30,7 +34,7 @@ public class Matrix{
       throw new IllegalArgumentException
         ("matrix must be constructed with at least one column vector");
     }
-    vals = new double[m][cols.size()];
+    vals = new T[m][cols.size()];
     for (int c = 0; c < cols.size(); c++){
       if (cols.get(c).dim() != m){
         throw new IllegalArgumentException
@@ -41,6 +45,8 @@ public class Matrix{
       }
     }
   }
+
+  // GETTERS //
 
   public int m(){
     return vals.length; // number of rows
@@ -59,7 +65,7 @@ public class Matrix{
   }
 
   public Vector col(int i){
-    double[] ary = new double[m()];
+    T[] ary = new T[m()];
     for (int r = 0; r < m(); r++){
       ary[r] = vals[r][i];
     }
@@ -69,6 +75,8 @@ public class Matrix{
   public double get(int r, int c){
     return vals[r][c];
   }
+
+  // OPERATIONS //
 
   public Matrix mult(Matrix A){
     if (n() != A.m()){
@@ -182,10 +190,10 @@ public class Matrix{
         }
       }
       copy.scaleRow(0, 1.0 / copy.col(c).get(0));
-      copy.vals[0][c] = 1.0; //fail-safe for double arithmetic
+      // copy.vals[0][c] = 1.0; //fail-safe for double arithmetic
       for (int r = 1; r < m(); r++){
         copy.combineRows(r, 0, copy.col(c).get(r) * -1);
-        copy.vals[r][c] = 0.0; //fail-safe for double arithmetic
+        // copy.vals[r][c] = 0.0; //fail-safe for double arithmetic
       }
       Matrix thisStep = copy.submatrix(0, 1, 0, n());
       Matrix nextStep = copy.submatrix(1, 0);
@@ -235,16 +243,12 @@ public class Matrix{
     return this;
   }
 
-  private void combineRows(int addedTo, int adding, double scalar){
+  private void combineRows(int addedTo, int adding, T scalar){
     if (addedTo == adding){
       throw new IllegalArgumentException("cannot combine a row with itself");
     }
     for (int c = 0; c < n(); c++){
-      vals[addedTo][c] += vals[adding][c] * scalar;
-      if (roughlyEquals(vals[addedTo][c], 0, Math.pow(10, DEFAULT_MARGIN))){
-        vals[addedTo][c] = 0;
-        // System.out.println(vals[addedTo][c]);
-      }
+      vals[addedTo][c] += vals[addedTo][c].add(vals[adding][c].mult(scalar));
     }
   }
 
@@ -252,29 +256,29 @@ public class Matrix{
     combineRows(added, adding, 1);
   }
 
-  private void scaleRow(int row, double scalar){
+  private void scaleRow(int row, T scalar){
     for (int c = 0; c < n(); c++){
-      vals[row][c] *= scalar;
+      vals[row][c] = vals[row][c].mult(scalar);
     }
   }
 
   public void swapRows(int rowI1, int rowI2){
     if (rowI1 != rowI2){
-      double[] temp = vals[rowI1];
+      T[] temp = vals[rowI1];
       vals[rowI1] = vals[rowI2];
       vals[rowI2] = temp;
     }
   }
 
   public void meanCenterColumns(){
-    double colMean = 0;
+    T colMean = 0;
     for (int c = 0; c < n(); c++){
       for (int r = 0; r < m(); r++){
-        colMean += vals[r][c];
+        colMean = colMean.add(vals[r][c]);
       }
-      colMean /= n();
+      colMean = colMean.divide(n());
       for (int r = 0; r < m(); r++){
-        vals[r][c] -= colMean;
+        vals[r][c] = vals[r][c].subtract(colMean);
       }
       colMean = 0;
     }
@@ -569,147 +573,6 @@ public class Matrix{
       }
     }
     return true;
-  }
-
-  // Mathematical operations //
-
-  public static double round(double x, int n){
-    // return Math.round(Math.pow(10, -1*n) * x) * Math.pow(10, n);
-    BigDecimal b = new BigDecimal(Double.toString(x));
-    b = b.setScale(-1*n, RoundingMode.HALF_UP);
-    return b.doubleValue();
-  }
-
-  protected static double round(double x){
-    return round(x, DEFAULT_ROUND);
-  }
-
-  protected static boolean numInRange(double x, double lo, double hi){
-    return ((x >= lo) && (x <= hi));
-  }
-
-  public static boolean roughlyEquals(double x, double t, double margin){
-    return numInRange(x, t - margin, t + margin);
-  }
-
-  public static boolean roughlyEquals(double x, double t){
-    return roughlyEquals(x, t, Math.pow(10,-1 * DEFAULT_ROUND));
-  }
-
-  public static int sign(double x){
-    if (x < 0){
-      return -1;
-    }else if (x > 0){
-      return 1;
-    }else{
-      return 0;
-    }
-  }
-
-  // Array operations //
-
-  public static double[] aryAppend(double[] ary, double newDouble){
-    double[] result = new double[ary.length+1];
-    for (int i = 0; i < ary.length; i++){
-      result[i] = ary[i];
-    }
-    result[ary.length] = newDouble;
-    return result;
-  }
-
-  public static int[] aryAppend(int[] ary, int newInt){
-    int[] result = new int[ary.length+1];
-    for (int i = 0; i < ary.length; i++){
-      result[i] = ary[i];
-    }
-    result[ary.length] = newInt;
-    return result;
-  }
-
-  public static String[] aryAppend(String[] ary, String str){
-    String[] result = new String[ary.length+1];
-    for (int i = 0; i < ary.length; i++){
-      result[i] = ary[i];
-    }
-    result[ary.length] = str;
-    return result;
-  }
-
-  public static int[][] aryAppend(int[][] ary, int[] newIntAry){
-    if (ary.length == 0){
-      int[][] result = new int[1][newIntAry.length];
-      result[0] = newIntAry;
-      return result;
-    }else{
-      int[][] result = new int[ary.length+1][ary[0].length];
-      for (int i = 0; i < ary.length; i++){
-        result[i] = ary[i];
-      }
-      result[ary.length] = newIntAry;
-      return result;
-    }
-  }
-
-  public static void aryRemoveLast(double[] ary){
-    double[] result = new double[ary.length-1];
-    for (int i = 0; i < result.length; i++){
-      result[i] = ary[i];
-    }
-    ary = result;
-  }
-
-  public static void aryRemoveLast(int[] ary){
-    int[] result = new int[ary.length-1];
-    for (int i = 0; i < result.length; i++){
-      result[i] = ary[i];
-    }
-    ary = result;
-  }
-
-  public static int[][] aryRemoveLast(int[][] ary){
-    int[][] result = new int[ary.length-1][ary[0].length];
-    for (int i = 0; i < result.length; i++){
-      result[i] = ary[i];
-    }
-    return result;
-  }
-
-  public static boolean aryContains(double[] ary, double d){
-    for (double item : ary){
-      if (item == d){
-        return true;
-      }
-    }
-    return false;
-  }
-
-  public static boolean aryContains(String[] ary, String s){
-    for (String str : ary){
-      if (str.equals(s)){
-        return true;
-      }
-    }
-    return false;
-  }
-
-  public static boolean aryContains(int[][] ary, int[] op){
-    for (int[] arr : ary){
-      for (int i = 0; i < arr.length; i++){
-        if (arr[i] != op[i]){
-          break;
-        }
-        if (i == arr.length-1){
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  // logical operations //
-
-  public static boolean xor(boolean p, boolean q){
-    return ((! p) && q) || (p && (! q));
   }
 
 }
