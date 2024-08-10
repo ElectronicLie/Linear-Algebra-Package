@@ -1,43 +1,44 @@
 package linalg;
 
+import malo.*;
 import java.util.Arrays;
 
 public class Vector extends Matrix{
 
-  protected double[] ary;
+  protected Fraction[] ary;
 
   public Vector(){
-    ary = new double[0];
+    ary = new Fraction[0];
   }
 
-  public Vector(double[] ary){
-    this.vals = new double[ary.length][1];
+  public Vector(Fraction[] ary){
+    this.vals = new Fraction[ary.length][1];
     for (int i = 0; i < ary.length; i++){
       vals[i][0] = ary[i];
     }
     this.ary = ary;
   }
 
-  public Vector(int[] intAry){
-    double[] ary = new double[intAry.length];
-    for (int i = 0; i < intAry.length; i++){
-      ary[i] = (double)(intAry[i]);
-    }
-    this.vals = new double[ary.length][1];
-    for (int i = 0; i < ary.length; i++){
-      vals[i][0] = ary[i];
-    }
-    this.ary = ary;
-  }
+  // public Vector(int[] intAry){
+  //   double[] ary = new double[intAry.length];
+  //   for (int i = 0; i < intAry.length; i++){
+  //     ary[i] = (double)(intAry[i]);
+  //   }
+  //   this.vals = new double[ary.length][1];
+  //   for (int i = 0; i < ary.length; i++){
+  //     vals[i][0] = ary[i];
+  //   }
+  //   this.ary = ary;
+  // }
 
   public Vector(int dim){
-    vals = new double[dim][1];
-    ary = new double[dim];
+    vals = new Fraction[dim][1];
+    ary = new Fraction[dim];
   }
 
   public static Vector zero(int dim){
     Vector result = new Vector(dim);
-    result.vals = new double[dim][1];
+    result.vals = new Fraction[dim][1];
     for (int i = 0; i < dim; i++){
       result.vals[i][0] = 0;
     }
@@ -48,11 +49,11 @@ public class Vector extends Matrix{
     return m();
   }
 
-  public double get(int i){
+  public Fraction get(int i){
     return this.vals[i][0];
   }
 
-  public double[] getVals(){
+  public Fraction[] getVals(){
     return ary;
   }
 
@@ -60,9 +61,10 @@ public class Vector extends Matrix{
     if (v.dim() != this.dim()){
       throw new IllegalArgumentException("unequal vector dimensions");
     }
-    double dot = 0;
+    Fraction dot = 0;
     for (int i = 0; i < dim(); i++){
       dot += get(i) * v.get(i);
+      dot = dot.add(get(i).mult(v.get(i)));
     }
     return dot;
   }
@@ -72,41 +74,50 @@ public class Vector extends Matrix{
   }
 
   public boolean orthogonal(Vector v){
-    return (dot(v) == 0);
+    return (dot(v).isZero());
   }
 
   public static boolean orthogonal(Vector u, Vector v){
-    return (dot(u,v) == 0);
+    return (dot(u,v).isZero());
   }
 
-  public double sum(){
-    double sum = 0;
+  public Fraction sum(){
+    Fraction sum = 0;
     for (int i = 0; i < dim(); i++){
-      sum += get(i);
+      sum = sum.add(get(i));
     }
     return sum;
   }
 
-  public double mag(){
-    double mag = 0;
-    for (int i = 0; i < dim(); i++){
-      mag += Math.pow(get(i), 2);
-    }
-    mag = Math.sqrt(mag);
-    return mag;
-  }
+  // public double mag(){
+  //   T mag = 0;
+  //   for (int i = 0; i < dim(); i++){
+  //     mag += Math.pow(get(i), 2);
+  //   }
+  //   mag = Math.sqrt(mag);
+  //   return mag;
+  // }
 
   public void stochasticize(){
     scale(1.0/sum());
   }
 
-  public void normalize(){
-    scale(1.0/mag());
-  }
+  // public void normalize(){
+  //   scale(1.0/mag());
+  // }
 
   protected Vector sorted(){
-    double[] aryCopy = Arrays.copyOf(this.ary, this.ary.length);
-    Arrays.sort(aryCopy);
+    Fraction[] aryCopy = Arrays.copyOf(this.ary, this.ary.length);
+    Fraction temp;
+    for (int i = aryCopy.length-1; i > 0; i--){
+      for (int j = 0; j < i; j++){
+        if (aryCopy[j].moreThan(aryCopy[j+1])){
+          temp = aryCopy[j];
+          aryCopy[j] = aryCopy[j+1];
+          aryCopy[j+1] = temp;
+        }
+      }
+    }
     return new Vector(aryCopy);
   }
 

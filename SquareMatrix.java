@@ -17,7 +17,7 @@ public class SquareMatrix extends Matrix{
     super(dim, dim);
   }
 
-  public SquareMatrix(double[][] ary){
+  public SquareMatrix(Fraction[][] ary){
     if (ary.length != ary[0].length){
       throw new IllegalArgumentException("square matrix must have an equal number of rows and columns");
     }
@@ -96,9 +96,9 @@ public class SquareMatrix extends Matrix{
 
   public double det(){
     Matrix l = refPreservePivots();
-    double product = 1;
+    Fraction product = 1;
     for (int i = 0; i < l.m(); i++){
-      product *= l.vals[i][i];
+      product = product.mult(l.vals[i][i]);
     }
     return product;
   }
