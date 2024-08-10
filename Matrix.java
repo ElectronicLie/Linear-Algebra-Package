@@ -439,17 +439,27 @@ public class Matrix{
     return copy;
   }
 
-  public static Matrix randomMatrix(int m, int n, double min, double max){
+  public static Matrix randomFromValue(int m, int n, double min, double max){
     Matrix random = new Matrix(m, n);
     for (int r = 0; r < m; r++){
       for (int c = 0; c < n; c++){
-        random.vals[r][c] = (max - min) * Math.random() + min;
+        random.vals[r][c] = new Fraction(Malo.randomDouble(min, max), "round");
       }
     }
     return random;
   }
 
-  public static Matrix randomMatrix(int m, int n, long min, long max){
+  public static Matrix randomFromValue(int m, int n, double min, double max, int p){
+    Matrix random = new Matrix(m, n);
+    for (int r = 0; r < m; r++){
+      for (int c = 0; c < n; c++){
+        random.vals[r][c] = new Fraction(Malo.randomDouble(min, max), p, "round");
+      }
+    }
+    return random;
+  }
+
+  public static Matrix random(int m, int n, long min, long max){
     Matrix random = new Matrix(m, n);
     long num, den;
     for (int r = 0; r < m; r++){
@@ -460,12 +470,8 @@ public class Matrix{
     return random;
   }
 
-  public static Matrix randomMatrix(int m, int n){
-    return randomMatrix(m, n, Mathematic.RANDOM_LOWER, Mathematic.RANDOM_UPPER);
-  }
-
-  public static Matrix randomMatrix(int m, int n, int p){
-    return randomMatrix(m, n, Mathematic.RANDOM_LOWER, Mathematic.RANDOM_UPPER, p);
+  public static Matrix random(int m, int n){
+    return random(m, n, Mathematic.RANDOM_LOWER, Mathematic.RANDOM_UPPER);
   }
 
   public void scale(Fraction k){

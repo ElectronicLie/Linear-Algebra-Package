@@ -177,32 +177,20 @@ public class SquareMatrix extends Matrix{
     return super.add(other).squareCopy();
   }
 
-  public static SquareMatrix randomMatrix(int dim, double min, double max){
-    SquareMatrix random = new SquareMatrix(dim);
-    for (int r = 0; r < dim; r++){
-      for (int c = 0; c < dim; c++){
-        random.vals[r][c] = (max - min) * Math.random() + min;
-      }
-    }
-    return random;
+  public static SquareMatrix randomFromValue(int dim, double min, double max){
+    return super.randomFromValue(dim, dim, min, max).squareCopy();;
   }
 
-  public static SquareMatrix randomMatrix(int dim, double min, double max, int p){
-    SquareMatrix random = new SquareMatrix(dim);
-    for (int r = 0; r < dim; r++){
-      for (int c = 0; c < dim; c++){
-        random.vals[r][c] = Matrix.round((max - min) * Math.random() + min, p);
-      }
-    }
-    return random;
+  public static SquareMatrix randomFromValue(int dim, double min, double max, int p){
+    return super.randomFromValue(dim, dim, min, max, p).squareCopy();
   }
 
-  public static SquareMatrix randomMatrix(int dim){
-    return randomMatrix(dim, -10.0, 10.0);
+  public static SquareMatrix random(int dim, long min, long max){
+    return super.random(dim, dim, min, max).squareCopy();
   }
 
-  public static SquareMatrix randomMatrix(int dim, int p){
-    return randomMatrix(dim, -10.0, 10.0, p);
+  public static SquareMatrix random(int dim){
+    return random(dim, Mathematic.RANDOM_LOWER, Mathematic.RANDOM_UPPER);
   }
 
 }

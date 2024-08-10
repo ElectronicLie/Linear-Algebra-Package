@@ -1,5 +1,6 @@
 package linalg;
 
+import fractions.Fraction;
 import java.util.ArrayList;
 
 public class Edge{
