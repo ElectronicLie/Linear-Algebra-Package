@@ -5,14 +5,14 @@ import java.util.Arrays;
 
 public class PolynomialMatrix extends Matrix{
 
-  protected SimpleRationalFraction[][] vals;
+  protected RationalExpression[][] vals;
 
-  public PolynomialMatrix(SimpleRationalFraction[][] pVals){
+  public PolynomialMatrix(RationalExpression[][] pVals){
     this.vals = pVals;
   }
 
   public PolynomialMatrix(int rows, int cols){
-    this.vals = new SimpleRationalFraction[rows][cols];
+    this.vals = new RationalExpression[rows][cols];
   }
 
   public int m(){
@@ -39,8 +39,8 @@ public class PolynomialMatrix extends Matrix{
     }
   }
 
-  public SimpleRationalFraction mainDiagonalProduct(String symbol){
-    SimpleRationalFraction product = new SimpleRationalFraction(symbol);
+  public RationalExpression mainDiagonalProduct(String symbol){
+    RationalExpression product = new RationalExpression(symbol);
     for (int d = 0; d < m(); d++){
       product = product.mult(this.vals[d][d]);
     }
@@ -48,8 +48,8 @@ public class PolynomialMatrix extends Matrix{
   }
 
   protected boolean isZero(){
-    for (SimpleRationalFraction[] row : vals){
-      for (SimpleRationalFraction val : row){
+    for (RationalExpression[] row : vals){
+      for (RationalExpression val : row){
         if (! val.isZero())
           return false;
       }
@@ -57,7 +57,7 @@ public class PolynomialMatrix extends Matrix{
     return true;
   }
 
-  private void combineRows(int addedTo, int adding, SimpleRationalFraction multiplier){
+  private void combineRows(int addedTo, int adding, RationalExpression multiplier){
     if (addedTo == adding){
       throw new IllegalArgumentException("cannot combine a row with itself");
     }
@@ -67,7 +67,7 @@ public class PolynomialMatrix extends Matrix{
   }
 
   private void combineRows(int added, int adding){
-    combineRows(added, adding, new SimpleRationalFraction("L"));
+    combineRows(added, adding, new RationalExpression("L"));
   }
 
   private void scaleRow(int row, double scalar){
@@ -91,10 +91,10 @@ public class PolynomialMatrix extends Matrix{
   }
 
   public String toString(int n){
-    return toString(n, 0);
+    return toString(0);
   }
 
-  public String toString(int n, int noTabs){
+  public String toString(int noTabs){
     String tabs = "";
     for (int i = 0; i < noTabs; i++){
       tabs += "\t";
@@ -103,14 +103,14 @@ public class PolynomialMatrix extends Matrix{
       return "[]";
     }
     String result = "";
-    SimpleRationalFraction rounded;
+    RationalExpression rounded;
     String cur;
     int curChars;
     int[] colMaxChars = new int[n()];
     for (int c = 0; c < n(); c++){
       colMaxChars[c] = 0;
       for (int r = 0; r < m(); r++){
-        rounded = vals[r][c].round(n);
+        rounded = vals[r][c];
         cur = rounded.toString();
         curChars = cur.length();
         if (curChars > colMaxChars[c]){
@@ -122,7 +122,7 @@ public class PolynomialMatrix extends Matrix{
       result += tabs;
       result += "[ ";
       for (int c = 0; c < n(); c++){
-        rounded = vals[r][c].round();
+        rounded = vals[r][c];
         cur = rounded.toString();
         curChars = cur.length();
         for (int i = 0; i < colMaxChars[c] - curChars; i++){
@@ -153,7 +153,7 @@ public class PolynomialMatrix extends Matrix{
   //     return "[]";
   //   }
   //   String result = "";
-  //   SimpleRationalFraction rounded;
+  //   RationalExpression rounded;
   //   String cur;
   //   int curChars;
   //   int[] colMaxChars = new int[n()];
@@ -186,52 +186,5 @@ public class PolynomialMatrix extends Matrix{
   //   }
   //   return result;
   // }
-
-  public String toStringUnRounded(){
-    return toStringUnRounded(0);
-  }
-
-  public String toStringUnRounded(int noTabs){
-    String tabs = "";
-    for (int i = 0; i < noTabs; i++){
-      tabs += "\t";
-    }
-    if (m() == 0 && n() == 0){
-      return "[]";
-    }
-    String result = "";
-    SimpleRationalFraction rounded;
-    String cur;
-    int curChars;
-    int[] colMaxChars = new int[n()];
-    for (int c = 0; c < n(); c++){
-      colMaxChars[c] = 0;
-      for (int r = 0; r < m(); r++){
-        rounded = vals[r][c];
-        cur = rounded.toStringUnRounded();
-        curChars = cur.length();
-        if (curChars > colMaxChars[c]){
-          colMaxChars[c] = curChars;
-        }
-      }
-    }
-    for (int r = 0; r < m(); r++){
-      result += tabs;
-      result += "[ ";
-      for (int c = 0; c < n(); c++){
-        rounded = vals[r][c];
-        cur = rounded.toStringUnRounded();
-        // System.out.println(vals[r][c].factorsToString());
-        curChars = cur.length();
-        for (int i = 0; i < colMaxChars[c] - curChars; i++){
-          cur += " ";
-        }
-        cur += " ";
-        result += cur;
-      }
-      result += "]\n";
-    }
-    return result;
-  }
 
 }
