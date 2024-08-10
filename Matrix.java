@@ -1,6 +1,7 @@
 package linalg;
 
 import malo.*;
+import fractions.Fraction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.math.BigDecimal;
@@ -35,7 +36,7 @@ public class Matrix{
       throw new IllegalArgumentException
         ("matrix must be constructed with at least one column vector");
     }
-    vals = new T[m][cols.size()];
+    vals = new Fraction[m][cols.size()];
     for (int c = 0; c < cols.size(); c++){
       if (cols.get(c).dim() != m){
         throw new IllegalArgumentException
@@ -138,7 +139,7 @@ public class Matrix{
     Matrix coV = this;
     coV.meanCenterRows();
     coV = coV.mult(coV.transpose());
-    coV.scale(new Fraction(1, this.n());
+    coV.scale(new Fraction(1, this.n()));
     return coV.squareCopy();
   }
 
@@ -150,9 +151,9 @@ public class Matrix{
       int c;
       for (c = 0; c < n(); c++){
         if (! col(c).isZero()){
-          if (col(c).get(0) == 0){
+          if (col(c).get(0).isZero()){
             for (int r = 0; r < m(); r++){
-              if (col(c).get(r) != 0){
+              if (! col(c).get(r).isZero()){
                 copy.swapRows(0, r);
               }
             }
@@ -179,9 +180,9 @@ public class Matrix{
       int c;
       for (c = 0; c < n(); c++){
         if (! col(c).isZero()){
-          if (col(c).get(0) == 0){
+          if (col(c).get(0).isZero()){
             for (int r = 0; r < m(); r++){
-              if (col(c).get(r) != 0){
+              if (! col(c).get(r).isZero()){
                 copy.swapRows(0, r);
               }
             }
@@ -219,7 +220,7 @@ public class Matrix{
             int[] pivotCoords = new int[2];
             pivotCoords[0] = r;
             pivotCoords[1] = c;
-            pivots = aryAppend(pivots, pivotCoords);
+            pivots = Malo.aryAppend(pivots, pivotCoords);
             c = n();
           }
         }
@@ -264,14 +265,14 @@ public class Matrix{
 
   public void swapRows(int rowI1, int rowI2){
     if (rowI1 != rowI2){
-      T[] temp = vals[rowI1];
+      Fraction[] temp = vals[rowI1];
       vals[rowI1] = vals[rowI2];
       vals[rowI2] = temp;
     }
   }
 
   public void meanCenterColumns(){
-    Fraction colMean = 0;
+    Fraction colMean = Fraction.zero();
     for (int c = 0; c < n(); c++){
       for (int r = 0; r < m(); r++){
         colMean = colMean.add(vals[r][c]);
@@ -280,12 +281,12 @@ public class Matrix{
       for (int r = 0; r < m(); r++){
         vals[r][c] = vals[r][c].subtract(colMean);
       }
-      colMean = 0;
+      colMean = Fraction.zero();
     }
   }
 
   public void meanCenterRows(){
-    Fraction rowMean = 0;
+    Fraction rowMean = Fraction.zero();
     for (int r = 0; r < m(); r++){
       for (int c = 0; c < n(); c++){
         rowMean = rowMean.add(vals[r][c]);
@@ -294,7 +295,7 @@ public class Matrix{
       for (int c = 0; c < n(); c++){
         vals[r][c] = vals[r][c].subtract(rowMean);
       }
-      rowMean = 0;
+      rowMean = Fraction.zero();
     }
   }
 
@@ -326,12 +327,12 @@ public class Matrix{
         ("cannot get weighted average of principal components when matrix has no eigenvectors");
     }
     Eigenvector pc;
-    Fraction eigenvalsSum = 0;
+    Fraction eigenvalsSum = Fraction.zero();
     for (int i = 1; i < pca.size(); i++){
       pc = pca.get(i);
       eigenvalsSum = eigenvalsSum.add(pc.getEigenvalue());
       pc.scale(pc.getEigenvalue());
-      mu.addTo(pc);
+      mu = mu.add(pc);
     }
     mu.scale(new Fraction(1, eigenvalsSum));
     // System.out.println("weighted average of PCs is complete");
@@ -385,15 +386,15 @@ public class Matrix{
       return "[]";
     }
     String result = "";
-    double rounded;
+    Fraction rounded;
     String cur;
     int curChars;
     int[] colMaxChars = new int[n()];
     for (int c = 0; c < n(); c++){
       colMaxChars[c] = 0;
       for (int r = 0; r < m(); r++){
-        rounded = vals[r][c].toString();
-        cur = rounded + "";
+        cur = vals[r][c].toString();
+        // cur = rounded + "";
         curChars = cur.length();
         if (curChars > colMaxChars[c]){
           colMaxChars[c] = curChars;
@@ -403,8 +404,7 @@ public class Matrix{
     for (int r = 0; r < m(); r++){
       result += tabs+"[ ";
       for (int c = 0; c < n(); c++){
-        rounded = vals[r][c].toString();
-        cur = rounded + "";
+        cur = vals[r][c].toString();
         curChars = cur.length();
         for (int i = 0; i < colMaxChars[c] - curChars; i++){
           cur += " ";
@@ -485,7 +485,7 @@ public class Matrix{
   public void plus(Fraction k){
     for (int r = 0; r < m(); r++){
       for (int c = 0; c < n(); c++){
-        vals[r][c] = vals[r][c].plus(k);
+        vals[r][c] = vals[r][c].add(k);
       }
     }
   }
@@ -527,10 +527,10 @@ public class Matrix{
     return submatrix(r1, m(), c1, n());
   }
 
-  public double sum(){
-    double sum = 0;
-    for (double[] row : vals){
-      for (double val : row){
+  public Fraction sum(){
+    Fraction sum = Fraction.zero();
+    for (Fraction[] row : vals){
+      for (Fraction val : row){
         sum = sum.add(val);
       }
     }
@@ -538,8 +538,8 @@ public class Matrix{
   }
 
   protected boolean hasZeros(){
-    for (double[] row : vals){
-      for (double val : row){
+    for (Fraction[] row : vals){
+      for (Fraction val : row){
         if (val.isZero())
           return true;
       }
@@ -548,8 +548,8 @@ public class Matrix{
   }
 
   protected boolean isZero(){
-    for (double[] row : vals){
-      for (double val : row){
+    for (Fraction[] row : vals){
+      for (Fraction val : row){
         if (! val.isZero())
           return false;
       }

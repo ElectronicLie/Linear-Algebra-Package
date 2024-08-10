@@ -1,5 +1,7 @@
 package linalg;
 
+import fractions.Fraction;
+
 public class Identity extends SquareMatrix{
 
   public Identity(int dim){
@@ -7,15 +9,11 @@ public class Identity extends SquareMatrix{
     for (int r = 0; r < dim; r++){
       for (int c = 0; c < dim; c++){
         if (r != c)
-          vals[r][c] = 0;
+          vals[r][c] = Fraction.zero();
         else
-          vals[r][c] = 1;
+          vals[r][c] = Fraction.one();
       }
     }
-  }
-
-  public int dim(){
-    return m();
   }
 
 }

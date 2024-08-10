@@ -1,5 +1,8 @@
 package linalg;
 
+import malo.Malo;
+import fractions.Fraction;
+
 public class AdjacencyChain{
 
   private Network network;
@@ -13,7 +16,7 @@ public class AdjacencyChain{
     calculateSumChain();
   }
 
-  private AdjacencyChain(double[][] ary, int iterations){
+  private AdjacencyChain(Fraction[][] ary, int iterations){
     matrix = new AdjacencyMatrix(ary);
     calculateSumChain(iterations);
   }
@@ -21,11 +24,11 @@ public class AdjacencyChain{
   private void calculateSumChain(int iterations){
     Matrix result = new Matrix(matrix.m(), matrix.n());
     Matrix term;
-    double n;
+    int n;
     for (n = 1; n <= iterations; n++){
       term = matrix.pow(n);
-      term.scale(1.0/(Math.pow(matrix.m(),n-1)));
-      result.addTo(term);
+      term.scale(new Fraction(1, Malo.pow(matrix.m(), n-1)));
+      result = result.add(term);
     }
     noIterations = iterations;
     sumChain = result;
@@ -34,41 +37,37 @@ public class AdjacencyChain{
   private void calculateSumChain(){
     Matrix result = new Matrix(matrix.m(), matrix.n());
     Matrix term;
-    double n;
+    int n;
     for (n = 1; result.hasZeros(); n++){
       term = matrix.pow(n);
-      term.scale(1.0/(Math.pow(matrix.m(),n-1)));
-      result.addTo(term);
+      term.scale(new Fraction(1, Malo.pow(matrix.m(), n-1)));
+      result = result.add(term);
     }
     System.out.println("number of iterations in AdjacencyChain: " + n);
     noIterations = (int)n;
     sumChain = result;
   }
 
-  public double qualityIndex(double noPaths){
-    double thisIndex = sumChain.sum() / (sumChain.m() * sumChain.n() * noPaths * noIterations);
-    return thisIndex;
+  public double qualityIndex(int noPaths){
+    Fraction thisIndex = sumChain.sum().divide(sumChain.m() * sumChain.n() * noPaths * noIterations);
+    return thisIndex.getValue();
   }
 
-  public double get(String node1, String node2){
+  public Fraction get(String node1, String node2){
     return sumChain.get(network.indexOfNode(node1), network.indexOfNode(node2));
   }
 
-  private static double[][] allOnes(int dim){
-    double[][] perfect = new double[dim][dim];
+  private static Fraction[][] allOnes(int dim){
+    Fraction[][] perfect = new Fraction[dim][dim];
     for (int i = 0; i < perfect.length; i++){
       for (int j = 0; j < perfect[i].length; j++){
-        perfect[i][j] = 1;
+        perfect[i][j] = Fraction.one();
       }
     }
     return perfect;
   }
 
   public String toString(){
-    return toString(Matrix.DEFAULT_ROUND);
-  }
-
-  public String toString(int n){
     String result = "";
     double rounded;
     String cur;
@@ -77,8 +76,7 @@ public class AdjacencyChain{
     for (int c = 0; c < matrix.n(); c++){
       colMaxChars[c] = 0;
       for (int r = 0; r < matrix.m(); r++){
-        rounded = Math.round(Math.pow(10,n) * matrix.get(r,c)) / Math.pow(10,n);
-        cur = rounded + "";
+        cur = matrix.get(r,c).toString();
         curChars = cur.length();
         if (curChars > colMaxChars[c]){
           colMaxChars[c] = curChars;
@@ -88,8 +86,7 @@ public class AdjacencyChain{
     for (int r = 0; r < matrix.m(); r++){
       result += "[ ";
       for (int c = 0; c < matrix.n(); c++){
-        rounded = Math.round(Math.pow(10,n) * matrix.get(r,c)) / Math.pow(10,n);
-        cur = rounded + "";
+        cur = matrix.get(r,c).toString();
         curChars = cur.length();
         for (int i = 0; i < colMaxChars[c] - curChars; i++){
           cur += " ";

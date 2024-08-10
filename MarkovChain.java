@@ -1,5 +1,7 @@
 package linalg;
 
+import fractions.Fraction;
+
 public class MarkovChain{
 
   private Network network;
@@ -25,20 +27,16 @@ public class MarkovChain{
     return (Vector)(initialState.mult(this.matrix.pow(n)));
   }
 
-  public String steadyStateToString(int p){
+  public String steadyStateToString(){
     Vector v = getSteadyState();
     String result = "";
     for (int n = 0; n < network.size(); n++){
-      result += "[ " + Matrix.round(v.get(n), p) + " ] " + network.getNode(n).getName() + "\n";
+      result += "[ " + v.get(n) + " ] " + network.getNode(n).getName() + "\n";
     }
     return result;
   }
 
-  public String steadyStateToString(){
-    return steadyStateToString(Matrix.DEFAULT_ROUND);
-  }
-
-  public String sortedSteadyStateToString(int p){
+  public String sortedSteadyStateToString(){
     String[] nodeNames = new String[network.size()];
     for (int n = 0; n < network.size(); n++){
       nodeNames[n] = network.getNode(n).getName();
@@ -46,8 +44,8 @@ public class MarkovChain{
     Vector v = this.steadyState;
     for (int i = v.dim()-1; i >= 0; i--){ //bubble sort
       for (int j = 0; j < i; j++){
-        if (v.get(j) > v.get(j+1)){
-          double tmp = v.get(j);
+        if (v.get(j).moreThan(v.get(j+1))){
+          Fraction tmp = v.get(j);
           v.vals[j][0] = v.get(j+1);
           v.vals[j+1][0] = tmp;
           String strTmp = nodeNames[j];
@@ -58,17 +56,9 @@ public class MarkovChain{
     }
     String result = "";
     for (int n = 0; n < network.size(); n++){
-      result += "[ " + Matrix.round(v.get(n), p) + " ] " + nodeNames[n] + "\n";
+      result += "[ " + v.get(n) + " ] " + nodeNames[n] + "\n";
     }
     return result;
-  }
-
-  public String sortedSteadyStateToString(){
-    return sortedSteadyStateToString(Matrix.DEFAULT_ROUND);
-  }
-
-  public String toString(){
-    return toString(Matrix.DEFAULT_ROUND);
   }
 
   public String matrixToString(){
@@ -79,16 +69,16 @@ public class MarkovChain{
     return matrix.pow(1023).toString();
   }
 
-  public String toString(int n){
+  public String toString(){
     String result = "";
-    double rounded;
+    Fraction rounded;
     String cur;
     int curChars;
     int[] colMaxChars = new int[matrix.n()];
     for (int c = 0; c < matrix.n(); c++){
       colMaxChars[c] = 0;
       for (int r = 0; r < matrix.m(); r++){
-        rounded = Math.round(Math.pow(10,n) * matrix.get(r,c)) / Math.pow(10,n);
+        rounded = matrix.get(r,c);
         cur = rounded + "";
         curChars = cur.length();
         if (curChars > colMaxChars[c]){
@@ -99,7 +89,7 @@ public class MarkovChain{
     for (int r = 0; r < matrix.m(); r++){
       result += "[ ";
       for (int c = 0; c < matrix.n(); c++){
-        rounded = Math.round(Math.pow(10,n) * matrix.get(r,c)) / Math.pow(10,n);
+        rounded = matrix.get(r,c);
         cur = rounded + "";
         curChars = cur.length();
         for (int i = 0; i < colMaxChars[c] - curChars; i++){

@@ -1,5 +1,6 @@
 package linalg;
 
+import fractions.Fraction;
 import malo.*;
 import java.util.Arrays;
 
@@ -40,7 +41,7 @@ public class Vector extends Matrix{
     Vector result = new Vector(dim);
     result.vals = new Fraction[dim][1];
     for (int i = 0; i < dim; i++){
-      result.vals[i][0] = 0;
+      result.vals[i][0] = Fraction.zero();
     }
     return result;
   }
@@ -57,19 +58,18 @@ public class Vector extends Matrix{
     return ary;
   }
 
-  public double dot(Vector v){
+  public Fraction dot(Vector v){
     if (v.dim() != this.dim()){
       throw new IllegalArgumentException("unequal vector dimensions");
     }
-    Fraction dot = 0;
+    Fraction dot = Fraction.zero();
     for (int i = 0; i < dim(); i++){
-      dot += get(i) * v.get(i);
       dot = dot.add(get(i).mult(v.get(i)));
     }
     return dot;
   }
 
-  public static double dot(Vector u, Vector v){
+  public static Fraction dot(Vector u, Vector v){
     return v.dot(u);
   }
 
@@ -81,8 +81,19 @@ public class Vector extends Matrix{
     return (dot(u,v).isZero());
   }
 
+  public Vector add(Vector other){
+    if (dim() != other.dim()){
+      throw new IllegalArgumentException("cannot add two Vectors of different dimensions");
+    }
+    Fraction[] ary = new Fraction[dim()];
+    for (int i = 0; i < ary.length; i++){
+      ary[i] = this.get(i).add(other.get(i));
+    }
+    return new Vector(ary);
+  }
+
   public Fraction sum(){
-    Fraction sum = 0;
+    Fraction sum = Fraction.zero();
     for (int i = 0; i < dim(); i++){
       sum = sum.add(get(i));
     }
@@ -99,7 +110,7 @@ public class Vector extends Matrix{
   // }
 
   public void stochasticize(){
-    scale(1.0/sum());
+    scale(new Fraction(1, sum()));
   }
 
   // public void normalize(){

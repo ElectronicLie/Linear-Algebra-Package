@@ -30,7 +30,7 @@ public class Edge{
   }
 
   public String toString(){
-    return "(" + giver.getName() + ", " + taker.getName() + " : " + Matrix.round(weight) + ")";
+    return "(" + giver.getName() + ", " + taker.getName() + " : " + weight.toString() + ")";
   }
 
 }

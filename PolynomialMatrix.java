@@ -1,6 +1,7 @@
 package linalg;
 
 import polynomials.*;
+import fractions.Fraction;
 import java.util.Arrays;
 
 public class PolynomialMatrix extends Matrix{
@@ -32,7 +33,7 @@ public class PolynomialMatrix extends Matrix{
     }else{
       for (int c = 0; c < n(); c++){
         for (int r = c+1; r < m(); r++){
-          combineRows(r, c, vals[r][c].scale(-1.0).divide(vals[c][c]));
+          combineRows(r, c, vals[r][c].scale(-1).divide(vals[c][c]));
         }
       }
       return this;
@@ -70,7 +71,7 @@ public class PolynomialMatrix extends Matrix{
     combineRows(added, adding, new RationalExpression("L"));
   }
 
-  private void scaleRow(int row, double scalar){
+  private void scaleRow(int row, Fraction scalar){
     for (int c = 0; c < n(); c++){
       vals[row][c] = vals[row][c].scale(scalar);
     }
@@ -87,10 +88,6 @@ public class PolynomialMatrix extends Matrix{
   }
 
   public String toString(){
-    return toString(DEFAULT_ROUND,0);
-  }
-
-  public String toString(int n){
     return toString(0);
   }
 

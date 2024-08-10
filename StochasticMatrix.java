@@ -1,5 +1,6 @@
 package linalg;
 
+import fractions.Fraction;
 import java.util.ArrayList;
 
 public class StochasticMatrix extends SquareMatrix{
@@ -8,7 +9,7 @@ public class StochasticMatrix extends SquareMatrix{
     super(dim);
   }
 
-  public StochasticMatrix(double[][] vals){
+  public StochasticMatrix(Fraction[][] vals){
     super(vals);
     stochasticize();
   }
@@ -26,26 +27,26 @@ public class StochasticMatrix extends SquareMatrix{
   private void stochasticize(){
     //if (! allNonNegative(vals))
       //throw new IllegalArgumentException("stochastic matrices cannot have negative entries");
-    double colSum = 0;
+    Fraction colSum = Fraction.zero();
     for (int c = 0; c < n(); c++){
       for (int r = 0; r < m(); r++){
-        colSum += this.col(c).get(r);
+        colSum = colSum.add(this.col(c).get(r));
       }
       for (int r = 0; r < m(); r++){
-        if (colSum == 0){
+        if (colSum.isZero()){
           throw new IllegalArgumentException("stochastic matrix column has all zero entries");
         }
-        vals[r][c] /= colSum;
+        vals[r][c] = vals[r][c].divide(colSum);
       }
-      colSum = 0;
+      colSum = Fraction.zero();
     }
   }
 
-  private static boolean allNonNegative(double[][] vals){
+  private static boolean allNonNegative(Fraction[][] vals){
     boolean result = true;
     for (int i = 0; i < vals.length; i++){
       for (int j = 0; j < vals[0].length; j++){
-        if (vals[i][j] < 0){
+        if (vals[i][j].isNegative()){
           return false;
         }
       }

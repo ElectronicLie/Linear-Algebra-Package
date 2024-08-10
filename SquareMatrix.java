@@ -1,6 +1,8 @@
 package linalg;
 
 import polynomials.*;
+import malo.*;
+import fractions.Fraction;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -94,9 +96,9 @@ public class SquareMatrix extends Matrix{
   //   return sum;
   // }
 
-  public double det(){
+  public Fraction det(){
     Matrix l = refPreservePivots();
-    Fraction product = 1;
+    Fraction product = Fraction.one();
     for (int i = 0; i < l.m(); i++){
       product = product.mult(l.vals[i][i]);
     }
@@ -118,40 +120,32 @@ public class SquareMatrix extends Matrix{
     for (int r = 0; r < dim(); r++){
       for (int c = 0; c < dim(); c++){
         if (r == c){
-          charEq.vals[r][c] = new SimpleRationalFraction
-            (new Polynomial(new double[] {vals[r][c],-1}, "L"), "L");
+          charEq.vals[r][c] = new RationalExpression
+            (new Polynomial(new Fraction[] {vals[r][c], Fraction.negOne()}, "L"), "L");
         }else{
-          charEq.vals[r][c] = new SimpleRationalFraction
-            (new Polynomial(new double[] {vals[r][c]}, "L"), "L");
+          charEq.vals[r][c] = new RationalExpression
+            (new Polynomial(new Fraction[] {vals[r][c]}, "L"), "L");
         }
       }
     }
     return charEq;
   }
 
-  public SimpleRationalFraction characteristicPolynomial(){
+  public RationalExpression characteristicPolynomial(){
     PolynomialMatrix charEq = characteristicEquation();
     PolynomialMatrix lu = charEq.upperTriangularViaREF();
-    SimpleRationalFraction result = lu.mainDiagonalProduct("L");
-    // Polynomial one = new Polynomial(new double[] {1.0});
-    // if (! result.getDenominator().equals(one)){
-    //   throw new IllegalStateException("denominator is complex");
-    // }
-    // System.out.println(charEq);
-    // System.out.println(lu.toStringUnRounded());
-    // System.out.println(lu.factorsToString());
-    // System.out.println(result);
-    // RationalFraction ads = new RationalFraction(new Polynomial(new double[] {-5,1}));
-    // RationalFraction abs = new RationalFraction(
-    //   new Polynomial(new double[] {1}), new Polynomial(new double[] {5,-1}));
-    // System.out.println(ads.mult(abs));
+    RationalExpression result = lu.mainDiagonalProduct("L");
+    Polynomial one = new Polynomial(new int[] {1});
+    if (! result.getDenominator().equals(one)){
+      throw new IllegalStateException("denominator is complex");
+    }
     return result;
   }
 
   private void calcEigenvectors(){
     this.eigenvectors = new ArrayList<Eigenvector>();
-    SimpleRationalFraction charPoly = characteristicPolynomial();
-    double[] eigenvals = charPoly.roundedRoots();
+    RationalExpression charPoly = characteristicPolynomial();
+    Fraction[] eigenvals = charPoly.roots();
     for (int e = 0; e < eigenvals.length; e++){
       this.eigenvectors.add(new Eigenvector(this, eigenvals[e]));
     }
@@ -178,15 +172,15 @@ public class SquareMatrix extends Matrix{
   }
 
   public static SquareMatrix randomFromValue(int dim, double min, double max){
-    return super.randomFromValue(dim, dim, min, max).squareCopy();;
+    return Matrix.randomFromValue(dim, dim, min, max).squareCopy();
   }
 
   public static SquareMatrix randomFromValue(int dim, double min, double max, int p){
-    return super.randomFromValue(dim, dim, min, max, p).squareCopy();
+    return Matrix.randomFromValue(dim, dim, min, max, p).squareCopy();
   }
 
   public static SquareMatrix random(int dim, long min, long max){
-    return super.random(dim, dim, min, max).squareCopy();
+    return Matrix.random(dim, dim, min, max).squareCopy();
   }
 
   public static SquareMatrix random(int dim){

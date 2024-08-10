@@ -1,5 +1,6 @@
 package linalg;
 
+import fractions.Fraction;
 import java.util.Arrays;
 
 public class SystemOfEquations{
@@ -41,9 +42,9 @@ public class SystemOfEquations{
     Matrix replacement = new Matrix(1, noCols);
     for (int c = 0; c < replacement.n(); c++){
       if (c == n || c == replacement.n()-1){
-        replacement.vals[0][c] = 1;
+        replacement.vals[0][c] = Fraction.one();
       }else{
-        replacement.vals[0][c] = 0;
+        replacement.vals[0][c] = Fraction.zero();
       }
     }
     Matrix top = Matrix.combineVertically(above, replacement);
@@ -61,7 +62,7 @@ public class SystemOfEquations{
     return solution;
   }
 
-  public double[] solutionAsArray(){
+  public Fraction[] solutionAsArray(){
     return solution.ary;
   }
 
@@ -69,13 +70,12 @@ public class SystemOfEquations{
     for (int r = 0; r < noEquations(); r++){
       boolean zero = true;
       for (int c = 0; c < noVariables(); c++){
-        if (! Matrix.roughlyEquals(rrefed.vals[r][c],0,Math.pow(10,Matrix.DEFAULT_MARGIN))){
+        if (! rrefed.vals[r][c].equals(0)){
           zero = false;
           break;
         }
       }
-      if (zero &&
-        (! Matrix.roughlyEquals(rrefed.vals[r][noVariables()],0,Math.pow(10,Matrix.DEFAULT_MARGIN)))){
+      if (zero && (! rrefed.vals[r][noVariables()].equals(0))){
           // System.out.println("inconsistent:\n"+rrefed);
           return true;
       }
@@ -106,7 +106,7 @@ public class SystemOfEquations{
   public int noIndependentEquations(){
     int result = 0;
     for (int r = 0; r < rrefed.m(); r++){
-      if (! rrefed.row(r).isRoughlyZero()){
+      if (! rrefed.row(r).isZero()){
         result++;
       }
     }

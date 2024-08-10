@@ -1,15 +1,17 @@
 package linalg;
 
+import fractions.Fraction;
+
 public class Eigenvector extends Vector{
 
-  protected double eigenval;
+  protected Fraction eigenval;
   protected SquareMatrix M;
 
-  Eigenvector(SquareMatrix m, double eigenvalue){
+  Eigenvector(SquareMatrix m, Fraction eigenvalue){
     M = m;
     eigenval = eigenvalue;
     Matrix identity = new Identity(M.dim());
-    identity.scale(-1 * eigenval);
+    identity.scale(eigenval.mult(-1));
     SquareMatrix characteristicEqMatrix = M.add(identity);
     SystemOfEquations eq = new SystemOfEquations(characteristicEqMatrix);
     eq.addZeroConstants();
@@ -18,7 +20,7 @@ public class Eigenvector extends Vector{
     this.vals = eq.solution().vals;
   }
 
-  public double getEigenvalue(){
+  public Fraction getEigenvalue(){
     return eigenval;
   }
 
