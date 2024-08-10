@@ -6,19 +6,19 @@ public class Edge{
 
   private Node giver;
   private Node taker;
-  private double weight;
+  private Fraction weight;
 
-  public Edge(Node n1, Node n2, double weight){
+  public Edge(Node n1, Node n2, Fraction weight){
     giver = n1;
     taker = n2;
     this.weight = weight;
   }
 
-  public double getWeight(){
+  public Fraction getWeight(){
     return weight;
   }
 
-  protected void setWeight(double newVal){
+  protected void setWeight(Fraction newVal){
     weight = newVal;
   }
 

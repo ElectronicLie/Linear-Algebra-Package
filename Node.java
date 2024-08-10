@@ -125,11 +125,11 @@ public class Node{
     return null;
   }
 
-  public double getEdgeWeight(Node other){
+  public Fraction getEdgeWeight(Node other){
     return getEdge(other).getWeight();
   }
 
-  public double[] getEdgeWeights(){
+  public Fraction[] getEdgeWeights(){
     return edgeVals;
   }
 
