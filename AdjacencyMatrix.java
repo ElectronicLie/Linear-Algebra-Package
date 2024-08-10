@@ -6,10 +6,10 @@ public class AdjacencyMatrix extends SquareMatrix{
     super(dim);
   }
 
-  public AdjacencyMatrix(double[][] ary){
+  public AdjacencyMatrix(Fraction[][] ary){
     super(ary);
-    for (double[] row : ary){
-      for (double val : row){
+    for (Fraction[] row : ary){
+      for (Fraction val : row){
         if (val != 1 && val != 0){
           throw new IllegalArgumentException("AdjacencyMatrix can only have entries of 1 or 0");
         }

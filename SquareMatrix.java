@@ -38,7 +38,7 @@ public class SquareMatrix extends Matrix{
     for (int c = 0; c < network.size(); c++){
       for (int r = 0; r < network.size(); r++){
         if (network.getNode(c).getEdge(network.getNode(r)) == null){
-          vals[r][c] = 0;
+          vals[r][c] = Fraction.zero();
         }else{
           vals[r][c] = network.getNode(c).getEdgeWeight(network.getNode(r));
         }

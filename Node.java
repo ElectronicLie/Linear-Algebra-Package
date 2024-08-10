@@ -1,25 +1,27 @@
 package linalg;
 
+import malo.Malo;
+import fractions.Fraction;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Node{
 
   protected ArrayList<Edge> edges;
-  protected double[] edgeVals;
+  protected Fraction[] edgeVals;
   protected ArrayList<Node> neighbors;
   protected String[] nabrs;
   protected Network network;
   protected String name;
   protected String[] terminology;
 
-  public Node(String name, String[] neibrs, double[] vals, double selfVal){
+  public Node(String name, String[] neibrs, Fraction[] vals, Fraction selfVal){
     this.name = name;
     if (neibrs.length != vals.length){
       throw new IllegalArgumentException("Node must have the same number of neighbors and weighted edges");
     }
-    nabrs = aryPrepend(neibrs, name);
-    edgeVals = aryPrepend(vals, selfVal);
+    nabrs = Malo.aryPrepend(neibrs, name);
+    edgeVals = Malo.aryPrepend(vals, selfVal);
     neighbors = new ArrayList<Node>(neibrs.length);
     neighbors.add(this);
     for (int i = 0; i < neibrs.length; i++){
@@ -35,7 +37,8 @@ public class Node{
   }
 
   public Node(String name, String[] neibrs){
-    this(name, neibrs, uniformPseudoStochasticAry(neibrs.length+1), 1.0/((double)neibrs.length+1.0));
+    this(name, neibrs, Malo.uniformPseudoStochasticAry(neibrs.length+1),
+      new Fraction(1, neibrs.length+1));
   }
 
   void updateNeighbors(){
@@ -44,7 +47,7 @@ public class Node{
     }
     for (int n = 0; n < network.size(); n++){
       Node other = network.getNode(n);
-      int indexOfNeighbor = aryIndexOf(nabrs, other.getName());
+      int indexOfNeighbor = Malo.aryIndexOf(nabrs, other.getName());
       if (indexOfNeighbor != -1){
         if (getEdge(other) == null)
           neighbors.set(indexOfNeighbor, other);
@@ -53,9 +56,9 @@ public class Node{
       if (network.isEven()){
         edgeVals = evenEdgeValsForActiveNeighbors();
         updateEdges();
-        int indexOfSelf = aryIndexOf(other.nabrs, getName());
+        int indexOfSelf = Malo.aryIndexOf(other.nabrs, getName());
         if (indexOfSelf != -1 && indexOfNeighbor == -1){
-          nabrs = aryAppend(nabrs, other.getName());
+          nabrs = Malo.aryAppend(nabrs, other.getName());
           neighbors.add(other);
           edges.add(null);
           edgeVals = evenEdgeValsForActiveNeighbors();
@@ -64,9 +67,9 @@ public class Node{
       }else if (network.isAdjacency()){
         edgeVals = adjacentEdgeValsForActiveNeighbors();
         updateEdges();
-        int indexOfSelf = aryIndexOf(other.nabrs, getName());
+        int indexOfSelf = Malo.aryIndexOf(other.nabrs, getName());
         if (indexOfSelf != -1 && indexOfNeighbor == -1){
-          nabrs = aryAppend(nabrs, other.getName());
+          nabrs = Malo.aryAppend(nabrs, other.getName());
           neighbors.add(other);
           edges.add(null);
           edgeVals = adjacentEdgeValsForActiveNeighbors();
@@ -134,24 +137,24 @@ public class Node{
     return name;
   }
 
-  private double[] evenEdgeValsForActiveNeighbors(){ // including self
-    double[] result = new double[edges.size()];
+  private Fraction[] evenEdgeValsForActiveNeighbors(){ // including self
+    Fraction[] result = new Fraction[edges.size()];
     for (int i = 0; i < result.length; i++){
       if (neighbors.get(i) == null)
-        result[i] = 0;
+        result[i] = Fraction.zero();
       else
-        result[i] = 1.0 / (double)(noActiveNeighbors()); //active neighbors plus self
+        result[i] = new Fraction(1, noActiveNeighbors()); //active neighbors plus self
     }
     return result;
   }
 
-  private double[] adjacentEdgeValsForActiveNeighbors(){
-    double[] result = new double[edges.size()];
+  private Fraction[] adjacentEdgeValsForActiveNeighbors(){
+    Fraction[] result = new Fraction[edges.size()];
     for (int i = 0; i < result.length; i++){
       if (neighbors.get(i) == null)
-        result[i] = 0;
+        result[i] = Fraction.zero();
       else
-        result[i] = 1;
+        result[i] = Fraction.one();
     }
     return result;
   }
@@ -183,68 +186,6 @@ public class Node{
       + terminology[3] + ": " + neighbors.toString() + "\n"
       + terminology[4] + ": " + edges.toString() + "\n"
       + terminology[5] + ": " + Arrays.toString(edgeVals);
-  }
-
-  private static String[] aryRemoveFirst(String[] ary){
-    String[] result = new String[ary.length-1];
-    for (int i = 0; i < result.length; i++){
-      result[i] = ary[i+1];
-    }
-    return result;
-  }
-
-  public static int aryIndexOf(String[] ary, String target){
-    for (int i = 0; i < ary.length; i++){
-      if (ary[i] != null){
-        if (ary[i].equals(target)){
-          return i;
-        }
-      }
-    }
-    return -1;
-  }
-
-  private static double[] uniformStochasticAry(int length){
-    double[] result = new double[length];
-    for (int i = 0; i < length; i++){
-      result[i] = 1.0 / (double)length;
-    }
-    return result;
-  }
-
-  private static double[] uniformPseudoStochasticAry(int trueLength){
-    double[] result = new double[trueLength-1];
-    for (int i = 0; i < result.length; i++){
-      result[i] = 1.0 / (double)trueLength;
-    }
-    return result;
-  }
-
-  public static String[] aryAppend(String[] ary, String newStr){
-    String[] result = new String[ary.length+1];
-    for (int i = 0; i < ary.length; i++){
-      result[i] = ary[i];
-    }
-    result[ary.length] = newStr;
-    return result;
-  }
-
-  private static String[] aryPrepend(String[] ary, String newElement){
-    String[] result = new String[ary.length+1];
-    result[0] = newElement;
-    for (int i = 1; i < result.length; i++){
-      result[i] = ary[i-1];
-    }
-    return result;
-  }
-
-  private static double[] aryPrepend(double[] ary, double newDouble){
-    double[] result = new double[ary.length+1];
-    result[0] = newDouble;
-    for (int i = 1; i < result.length; i++){
-      result[i] = ary[i-1];
-    }
-    return result;
   }
 
 }
