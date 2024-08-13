@@ -3,6 +3,7 @@ package linalg;
 import java.util.ArrayList;
 import java.util.Arrays;
 import polynomials.*;
+import fractions.*;
 
 public class Tester{
 
@@ -42,32 +43,44 @@ public class Tester{
     // // System.out.println(soe.solution());
     // System.out.println(m.rref());
 
-    // SquareMatrix m = SquareMatrix.randomMatrix(3,0);
-    // SquareMatrix m = new SquareMatrix(new double[][] {{5,-9,9},{-5,-1,8},{8,5,2}});
-    // SquareMatrix r = SquareMatrix.randomMatrix(4,0);
-    // SquareMatrix test = r;
+    // SquareMatrix m = SquareMatrix.random(3,0);
+    // SquareMatrix m = new SquareMatrix(new int[][] {{5,-9,9},{-5,-1,8},{8,5,2}});
+    // // SquareMatrix r = SquareMatrix.random(4,0);
+    // SquareMatrix test = m;
     // System.out.println(test);
     // PolynomialMatrix ce = test.characteristicEquation();
     // // System.out.println(ce.factorsToString());
     // System.out.println(ce);
     // PolynomialMatrix lu = ce.upperTriangularViaREF();
-    // // System.out.println(lu.factorsToString());
+    // System.out.println(lu.factorsToString());
     // System.out.println(lu);
-    // SimpleRationalFraction cp = lu.mainDiagonalProduct("L");
+    // RationalExpression cp = lu.mainDiagonalProduct("L");
     // System.out.println(cp);
-    // SimpleRationalFraction cpp = test.characteristicPolynomial();
+    // RationalExpression cpp = test.characteristicPolynomial();
     // System.out.println("char. poly.: \n"+cpp+"\n");
-    // // System.out.println("numerator:\n"+cp.getNumerator().toStringUnRounded());
-    // // double[] numRts = cp.getNumerator().roots();
-    // // System.out.println("numerator roots:\n"+Arrays.toString(numRts)+"\n");
-    // // double[] denRts = cp.getDenominator().roots();
-    // // System.out.println("denominator roots:\n"+Arrays.toString(denRts)+"\n");
-    // double[] rts = cp.roots();
-    // System.out.println("rational fraction roots:\n"+Arrays.toString(rts));
+    // // // System.out.println("numerator:\n"+cp.getNumerator().toStringUnRounded());
+    // // // double[] numRts = cp.getNumerator().roots();
+    // // // System.out.println("numerator roots:\n"+Arrays.toString(numRts)+"\n");
+    // // // double[] denRts = cp.getDenominator().roots();
+    // // // System.out.println("denominator roots:\n"+Arrays.toString(denRts)+"\n");
+    // Fraction[] rts = cp.roots();
+    // System.out.println("char. poly. roots:\n"+Arrays.toString(rts));
     // System.out.println(test.getEigenvectors());
 
     // RationalFraction tst = new RationalFraction(new Polynomial(new double[] {3,-1}, "L"), "L");
     // System.out.println(tst.factorsToString());
+
+    Fraction[][] ma = new Fraction[][] {
+      {new Fraction(3527, 200), new Fraction(-9), new Fraction(9), Fraction.zero()},
+      {new Fraction(-5), new Fraction(8207329, 200), new Fraction(28216), Fraction.zero()},
+      {Fraction.zero(), Fraction.zero(), Fraction.one(), Fraction.one()}
+    };
+    Matrix m = new Matrix(ma);
+
+    System.out.println(m);
+    // System.out.println(m.ref());
+    System.out.println(m.rref());
+
 
   }
 

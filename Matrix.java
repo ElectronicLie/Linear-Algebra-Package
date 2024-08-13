@@ -28,6 +28,15 @@ public class Matrix{
     this.vals = vals;
   }
 
+  public Matrix(int[][] iVals){
+    this.vals = new Fraction[iVals.length][iVals[0].length];
+    for (int r = 0; r < vals.length; r++){
+      for (int c = 0; c < vals.length; c++){
+        this.vals[r][c] = new Fraction(iVals[r][c]);
+      }
+    }
+  }
+
   public Matrix(ArrayList<Vector> cols){
     int m;
     try{
@@ -208,6 +217,7 @@ public class Matrix{
       return this;
     }
     Matrix refed = this.ref();
+    System.out.println("REFed:\n"+refed);
     int[][] pivots = new int[0][0];
     for (int r = 0; r < m(); r++){
       for (int c = 0; c < n(); c++){
@@ -230,6 +240,7 @@ public class Matrix{
   }
 
   private Matrix rrefAlg(int[][] pivots){
+    System.out.println("rrefAlg:\n"+this);
     if (pivots.length == 0){
       return this;
     }
@@ -237,7 +248,10 @@ public class Matrix{
       int c = pivots[p][1];
       int rPivot = pivots[p][0];
       for (int r = rPivot-1; r >= 0; r--){
-        combineRows(r, rPivot, this.col(c).get(r).mult(-1));
+        System.out.println("going to combine rows");
+        System.out.println(this.vals[r][c]);
+        combineRows(r, rPivot, this.vals[r][c].mult(-1));
+        System.out.println("have combined rows");
         vals[r][c] = Fraction.zero(); //fail-safe for double arithmetic
       }
     }
@@ -405,6 +419,54 @@ public class Matrix{
       result += tabs+"[ ";
       for (int c = 0; c < n(); c++){
         cur = vals[r][c].toString();
+        curChars = cur.length();
+        for (int i = 0; i < colMaxChars[c] - curChars; i++){
+          cur += " ";
+        }
+        result += cur + " ";
+      }
+      result += "]\n";
+    }
+    return result;
+  }
+
+  public String doubleToString(){
+    return doubleToString(Mathematic.DEFAULT_ROUND);
+  }
+
+  public String doubleToString(int n){
+    return doubleToString(n, 0);
+  }
+
+  public String doubleToString(int n, int noTabs){
+    String tabs = "";
+    for (int i = 0; i < noTabs; i++){
+      tabs += "\t";
+    }
+    if (m() == 0 && n() == 0){
+      return "[]";
+    }
+    String result = "";
+    double rounded;
+    String cur;
+    int curChars;
+    int[] colMaxChars = new int[n()];
+    for (int c = 0; c < n(); c++){
+      colMaxChars[c] = 0;
+      for (int r = 0; r < m(); r++){
+        rounded = Malo.roundDouble(vals[r][c].getValue(), n);
+        cur = rounded + "";
+        curChars = cur.length();
+        if (curChars > colMaxChars[c]){
+          colMaxChars[c] = curChars;
+        }
+      }
+    }
+    for (int r = 0; r < m(); r++){
+      result += tabs+"[ ";
+      for (int c = 0; c < n(); c++){
+        rounded = Malo.roundDouble(vals[r][c].getValue(), n);
+        cur = rounded+"";
         curChars = cur.length();
         for (int i = 0; i < colMaxChars[c] - curChars; i++){
           cur += " ";

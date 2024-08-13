@@ -33,7 +33,13 @@ public class PolynomialMatrix extends Matrix{
     }else{
       for (int c = 0; c < n(); c++){
         for (int r = c+1; r < m(); r++){
-          combineRows(r, c, vals[r][c].scale(-1).divide(vals[c][c]));
+          // System.out.println("eliminated "+vals[r][c].factorsToString()+" with "+
+          //   vals[c][c].factorsToString());
+          // System.out.println(vals[r][c].mult(vals[c][c].reciprocal()));
+          // System.out.println("by multiplying row "+c+" by "+vals[r][c].mult(-1).divide(vals[c][c]));
+          // System.out.println("and adding it to row "+r);
+          combineRows(r, c, vals[r][c].mult(-1).divide(vals[c][c]));
+          // System.out.println(this);
         }
       }
       return this;
@@ -133,55 +139,51 @@ public class PolynomialMatrix extends Matrix{
     return result;
   }
 
-  // public String factorsToString(){
-  //   return factorsToString(-3);
-  // }
-  //
-  // public String factorsToString(int n){
-  //   return factorsToString(n, 0);
-  // }
-  //
-  // public String factorsToString(int n, int noTabs){
-  //   String tabs = "";
-  //   for (int i = 0; i < noTabs; i++){
-  //     tabs += "\t";
-  //   }
-  //   if (m() == 0 && n() == 0){
-  //     return "[]";
-  //   }
-  //   String result = "";
-  //   RationalExpression rounded;
-  //   String cur;
-  //   int curChars;
-  //   int[] colMaxChars = new int[n()];
-  //   for (int c = 0; c < n(); c++){
-  //     colMaxChars[c] = 0;
-  //     for (int r = 0; r < m(); r++){
-  //       rounded = vals[r][c].round(n);
-  //       cur = rounded.factorsToString();
-  //       curChars = cur.length();
-  //       if (curChars > colMaxChars[c]){
-  //         colMaxChars[c] = curChars;
-  //       }
-  //     }
-  //   }
-  //   for (int r = 0; r < m(); r++){
-  //     result += tabs;
-  //     result += "[ ";
-  //     for (int c = 0; c < n(); c++){
-  //       rounded = vals[r][c].round();
-  //       cur = rounded.factorsToString();
-  //       // System.out.println(vals[r][c].factorsToString());
-  //       curChars = cur.length();
-  //       for (int i = 0; i < colMaxChars[c] - curChars; i++){
-  //         cur += " ";
-  //       }
-  //       cur += " ";
-  //       result += cur;
-  //     }
-  //     result += "]\n";
-  //   }
-  //   return result;
-  // }
+  public String factorsToString(){
+    return factorsToString(0);
+  }
+
+  public String factorsToString(int noTabs){
+    String tabs = "";
+    for (int i = 0; i < noTabs; i++){
+      tabs += "\t";
+    }
+    if (m() == 0 && n() == 0){
+      return "[]";
+    }
+    String result = "";
+    RationalExpression rounded;
+    String cur;
+    int curChars;
+    int[] colMaxChars = new int[n()];
+    for (int c = 0; c < n(); c++){
+      colMaxChars[c] = 0;
+      for (int r = 0; r < m(); r++){
+        rounded = vals[r][c];
+        cur = rounded.factorsToString();
+        curChars = cur.length();
+        if (curChars > colMaxChars[c]){
+          colMaxChars[c] = curChars;
+        }
+      }
+    }
+    for (int r = 0; r < m(); r++){
+      result += tabs;
+      result += "[ ";
+      for (int c = 0; c < n(); c++){
+        rounded = vals[r][c];
+        cur = rounded.factorsToString();
+        // System.out.println(vals[r][c].factorsToString());
+        curChars = cur.length();
+        for (int i = 0; i < colMaxChars[c] - curChars; i++){
+          cur += " ";
+        }
+        cur += " ";
+        result += cur;
+      }
+      result += "]\n";
+    }
+    return result;
+  }
 
 }

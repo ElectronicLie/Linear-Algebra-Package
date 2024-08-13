@@ -19,6 +19,13 @@ public class SquareMatrix extends Matrix{
     super(dim, dim);
   }
 
+  public SquareMatrix(int[][] ary){
+    super(ary);
+    if (ary.length != ary[0].length){
+      throw new IllegalArgumentException("square matrix must have an equal number of rows and columns");
+    }
+  }
+
   public SquareMatrix(Fraction[][] ary){
     if (ary.length != ary[0].length){
       throw new IllegalArgumentException("square matrix must have an equal number of rows and columns");
@@ -136,9 +143,9 @@ public class SquareMatrix extends Matrix{
     PolynomialMatrix lu = charEq.upperTriangularViaREF();
     RationalExpression result = lu.mainDiagonalProduct("L");
     Polynomial one = new Polynomial(new int[] {1});
-    if (! result.getDenominator().equals(one)){
-      throw new IllegalStateException("denominator is complex");
-    }
+    // if (! result.getDenominator().equals(one)){
+    //   throw new IllegalStateException("denominator is complex");
+    // }
     return result;
   }
 

@@ -11,27 +11,24 @@ public class SystemOfEquations{
 
   public SystemOfEquations(Matrix M){
     matrix = M;
-    solve();
   }
 
   public void addZeroConstants(){
     matrix = Matrix.combineHorizontally(matrix, Vector.zero(matrix.m()));
-    solve();
   }
 
   public void makeFirstVariableOne(){
     Matrix copy = matrix.copy();
-    makeVariableOne(0);
-    int var = 0;
-    var = 1;
-    while (inconsistent() && var < matrix.m()){
+    makeVariableOne(matrix.m()-1);
+    int var = matrix.m()-2;
+    while (inconsistent() && var >= 0){
       matrix = copy.copy();
       // System.out.println(var);
       // System.out.println("number of rows: "+matrix.m());
       // System.out.println("var<matrix.m(): "+(var<matrix.m()));
       // System.out.println(matrix);
       makeVariableOne(var);
-      var++;
+      var--;
     }
   }
 
@@ -49,11 +46,12 @@ public class SystemOfEquations{
     }
     Matrix top = Matrix.combineVertically(above, replacement);
     matrix = Matrix.combineVertically(top, matrix);
-    solve();
   }
 
-  private void solve(){
+  public void solve(){
+    System.out.println("system:\n"+matrix);
     rrefed = matrix.rref();
+    System.out.println("RREFed:\n"+rrefed+"\n");
     // System.out.println(rrefed);
     solution = rrefed.col(rrefed.n()-1);
   }
@@ -67,6 +65,7 @@ public class SystemOfEquations{
   }
 
   public boolean inconsistent(){
+    solve();
     for (int r = 0; r < noEquations(); r++){
       boolean zero = true;
       for (int c = 0; c < noVariables(); c++){
