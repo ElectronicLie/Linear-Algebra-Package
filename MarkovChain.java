@@ -1,5 +1,7 @@
 package linalg;
 
+import malo.*;
+
 public class MarkovChain{
 
   private Network network;
@@ -29,13 +31,13 @@ public class MarkovChain{
     Vector v = getSteadyState();
     String result = "";
     for (int n = 0; n < network.size(); n++){
-      result += "[ " + Matrix.round(v.get(n), p) + " ] " + network.getNode(n).getName() + "\n";
+      result += "[ " + Malo.roundDouble(v.get(n), p) + " ] " + network.getNode(n).getName() + "\n";
     }
     return result;
   }
 
   public String steadyStateToString(){
-    return steadyStateToString(Matrix.DEFAULT_ROUND);
+    return steadyStateToString(Mathematic.DEFAULT_ROUND);
   }
 
   public String sortedSteadyStateToString(int p){
@@ -58,17 +60,17 @@ public class MarkovChain{
     }
     String result = "";
     for (int n = 0; n < network.size(); n++){
-      result += "[ " + Matrix.round(v.get(n), p) + " ] " + nodeNames[n] + "\n";
+      result += "[ " + Malo.roundDouble(v.get(n), p) + " ] " + nodeNames[n] + "\n";
     }
     return result;
   }
 
   public String sortedSteadyStateToString(){
-    return sortedSteadyStateToString(Matrix.DEFAULT_ROUND);
+    return sortedSteadyStateToString(Mathematic.DEFAULT_ROUND);
   }
 
   public String toString(){
-    return toString(Matrix.DEFAULT_ROUND);
+    return toString(Mathematic.DEFAULT_ROUND);
   }
 
   public String matrixToString(){

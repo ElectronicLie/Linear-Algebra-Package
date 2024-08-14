@@ -1,5 +1,6 @@
 package linalg;
 
+import malo.*;
 import java.util.ArrayList;
 
 public class Edge{
@@ -29,7 +30,7 @@ public class Edge{
   }
 
   public String toString(){
-    return "(" + giver.getName() + ", " + taker.getName() + " : " + Matrix.round(weight) + ")";
+    return "(" + giver.getName() + ", " + taker.getName() + " : " + Malo.roundDouble(weight) + ")";
   }
 
 }

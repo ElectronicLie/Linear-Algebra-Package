@@ -1,5 +1,7 @@
 package linalg;
 
+import malo.*;
+
 public class AdjacencyChain{
 
   private Network network;
@@ -65,7 +67,7 @@ public class AdjacencyChain{
   }
 
   public String toString(){
-    return toString(Matrix.DEFAULT_ROUND);
+    return toString(Mathematic.DEFAULT_ROUND);
   }
 
   public String toString(int n){

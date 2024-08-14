@@ -1,5 +1,6 @@
 package linalg;
 
+import malo.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.math.BigDecimal;
@@ -8,8 +9,6 @@ import java.math.RoundingMode;
 public class Matrix{
 
   protected double[][] vals;
-
-  static final int DEFAULT_ROUND = -3;
 
   public Matrix(){}
 
@@ -163,6 +162,35 @@ public class Matrix{
     }
   }
 
+  protected Matrix refPreservePivots(){ // ref without making pivots 1
+    if (isZero() || m() == 0){
+      return this;
+    }else{
+      Matrix copy = this.copy();
+      int c;
+      for (c = 0; c < n(); c++){
+        if (! col(c).isZero()){
+          if (col(c).get(0) == 0){
+            for (int r = 0; r < m(); r++){
+              if (col(c).get(r) != 0){
+                copy.swapRows(0, r);
+              }
+            }
+          }
+          break;
+        }
+      }
+      // copy.vals[0][c] = 1.0; //fail-safe for double arithmetic
+      for (int r = 1; r < m(); r++){
+        copy.combineRows(r, 0, -1 * copy.col(c).get(r));
+        copy.vals[r][c] = 0; //fail-safe for double arithmetic
+      }
+      Matrix thisStep = copy.submatrix(0, 1, 0, n());
+      Matrix nextStep = copy.submatrix(1, 0);
+      return combineVertically(thisStep, nextStep.ref()); // recursion
+    }
+  }
+
   public Matrix rref(){
     if (isZero()){
       return this;
@@ -180,7 +208,7 @@ public class Matrix{
             int[] pivotCoords = new int[2];
             pivotCoords[0] = r;
             pivotCoords[1] = c;
-            pivots = aryAppend(pivots, pivotCoords);
+            pivots =Malo.aryAppend(pivots, pivotCoords);
             c = n();
           }
         }
@@ -319,7 +347,7 @@ public class Matrix{
     }
     for (int r = 0; r < m(); r++){
       for (int c = 0; c < n(); c++){
-        if (! roughlyEquals(vals[r][c], other.vals[r][c], margin)){
+        if (! Malo.roughlyEquals(vals[r][c], other.vals[r][c], margin)){
           return false;
         }
       }
@@ -328,13 +356,23 @@ public class Matrix{
   }
 
   public boolean roughlyEquals(Matrix other){
-    return roughlyEquals(other, Math.pow(10, DEFAULT_ROUND));
+    if (n() != other.n() || m() != other.m()){
+      return false;
+    }
+    for (int r = 0; r < m(); r++){
+      for (int c = 0; c < n(); c++){
+        if (! Malo.roughlyEquals(vals[r][c], other.vals[r][c])){
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   // toString //
 
   public String toString(){
-    return toString(DEFAULT_ROUND,0);
+    return toString(Mathematic.DEFAULT_ROUND,0);
   }
 
   public String toString(int n){
@@ -357,7 +395,7 @@ public class Matrix{
     for (int c = 0; c < n(); c++){
       colMaxChars[c] = 0;
       for (int r = 0; r < m(); r++){
-        rounded = round(get(r,c));
+        rounded = Malo.roundDouble(get(r,c));
         cur = rounded + "";
         curChars = cur.length();
         if (curChars > colMaxChars[c]){
@@ -368,7 +406,7 @@ public class Matrix{
     for (int r = 0; r < m(); r++){
       result += tabs+"[ ";
       for (int c = 0; c < n(); c++){
-        rounded = round(get(r,c));
+        rounded = Malo.roundDouble(get(r,c));
         cur = rounded + "";
         curChars = cur.length();
         for (int i = 0; i < colMaxChars[c] - curChars; i++){
@@ -418,7 +456,7 @@ public class Matrix{
     Matrix random = new Matrix(m, n);
     for (int r = 0; r < m; r++){
       for (int c = 0; c < n; c++){
-        random.vals[r][c] = round((max - min) * Math.random() + min, p);
+        random.vals[r][c] = Malo.roundDouble((max - min) * Math.random() + min, p);
       }
     }
     return random;
@@ -524,147 +562,6 @@ public class Matrix{
       }
     }
     return true;
-  }
-
-  // Mathematical operations //
-
-  public static double round(double x, int n){
-    // return Math.round(Math.pow(10, -1*n) * x) * Math.pow(10, n);
-    BigDecimal b = new BigDecimal(Double.toString(x));
-    b = b.setScale(-1*n, RoundingMode.HALF_UP);
-    return b.doubleValue();
-  }
-
-  protected static double round(double x){
-    return round(x, DEFAULT_ROUND);
-  }
-
-  protected static boolean numInRange(double x, double lo, double hi){
-    return ((x >= lo) && (x <= hi));
-  }
-
-  public static boolean roughlyEquals(double x, double t, double margin){
-    return numInRange(x, t - margin, t + margin);
-  }
-
-  public static boolean roughlyEquals(double x, double t){
-    return roughlyEquals(x, t, Math.pow(10,-1 * DEFAULT_ROUND));
-  }
-
-  public static int sign(double x){
-    if (x < 0){
-      return -1;
-    }else if (x > 0){
-      return 1;
-    }else{
-      return 0;
-    }
-  }
-
-  // Array operations //
-
-  public static double[] aryAppend(double[] ary, double newDouble){
-    double[] result = new double[ary.length+1];
-    for (int i = 0; i < ary.length; i++){
-      result[i] = ary[i];
-    }
-    result[ary.length] = newDouble;
-    return result;
-  }
-
-  public static int[] aryAppend(int[] ary, int newInt){
-    int[] result = new int[ary.length+1];
-    for (int i = 0; i < ary.length; i++){
-      result[i] = ary[i];
-    }
-    result[ary.length] = newInt;
-    return result;
-  }
-
-  public static String[] aryAppend(String[] ary, String str){
-    String[] result = new String[ary.length+1];
-    for (int i = 0; i < ary.length; i++){
-      result[i] = ary[i];
-    }
-    result[ary.length] = str;
-    return result;
-  }
-
-  public static int[][] aryAppend(int[][] ary, int[] newIntAry){
-    if (ary.length == 0){
-      int[][] result = new int[1][newIntAry.length];
-      result[0] = newIntAry;
-      return result;
-    }else{
-      int[][] result = new int[ary.length+1][ary[0].length];
-      for (int i = 0; i < ary.length; i++){
-        result[i] = ary[i];
-      }
-      result[ary.length] = newIntAry;
-      return result;
-    }
-  }
-
-  public static void aryRemoveLast(double[] ary){
-    double[] result = new double[ary.length-1];
-    for (int i = 0; i < result.length; i++){
-      result[i] = ary[i];
-    }
-    ary = result;
-  }
-
-  public static void aryRemoveLast(int[] ary){
-    int[] result = new int[ary.length-1];
-    for (int i = 0; i < result.length; i++){
-      result[i] = ary[i];
-    }
-    ary = result;
-  }
-
-  public static int[][] aryRemoveLast(int[][] ary){
-    int[][] result = new int[ary.length-1][ary[0].length];
-    for (int i = 0; i < result.length; i++){
-      result[i] = ary[i];
-    }
-    return result;
-  }
-
-  public static boolean aryContains(double[] ary, double d){
-    for (double item : ary){
-      if (item == d){
-        return true;
-      }
-    }
-    return false;
-  }
-
-  public static boolean aryContains(String[] ary, String s){
-    for (String str : ary){
-      if (str.equals(s)){
-        return true;
-      }
-    }
-    return false;
-  }
-
-  public static boolean aryContains(int[][] ary, int[] op){
-    for (int[] arr : ary){
-      for (int i = 0; i < arr.length; i++){
-        if (arr[i] != op[i]){
-          break;
-        }
-        if (i == arr.length-1){
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  // logical operations //
-
-  public static boolean xor(boolean p, boolean q){
-    return ((! p) && q) || (p && (! q));
   }
 
 }
