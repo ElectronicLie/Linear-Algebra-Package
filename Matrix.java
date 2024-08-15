@@ -187,8 +187,10 @@ public class Matrix{
       }
       Matrix thisStep = copy.submatrix(0, 1, 0, n());
       Matrix nextStep = copy.submatrix(1, 0);
-      System.out.println("thisStep:\n"+thisStep);
-      System.out.println("nextStep:\n"+nextStep);
+      thisStep.correctZeroes();
+      nextStep.correctZeroes();
+      // System.out.println("thisStep:\n"+thisStep);
+      // System.out.println("nextStep:\n"+nextStep);
       return combineVertically(thisStep, nextStep.refPreservePivots()); // recursion
     }
   }
@@ -258,6 +260,16 @@ public class Matrix{
       double[] temp = vals[rowI1];
       vals[rowI1] = vals[rowI2];
       vals[rowI2] = temp;
+    }
+  }
+
+  private void correctZeroes(){
+    for (int r = 0; r < m(); r++){
+      for (int c = 0; c < n(); c++){
+        if (Malo.roughlyEquals(vals[r][c], 0)){
+          vals[r][c] = 0;
+        }
+      }
     }
   }
 
@@ -409,6 +421,50 @@ public class Matrix{
       result += tabs+"[ ";
       for (int c = 0; c < n(); c++){
         rounded = Malo.roundDouble(get(r,c));
+        cur = rounded + "";
+        curChars = cur.length();
+        for (int i = 0; i < colMaxChars[c] - curChars; i++){
+          cur += " ";
+        }
+        result += cur + " ";
+      }
+      result += "]\n";
+    }
+    return result;
+  }
+
+  public String unRoundedToString(){
+    return unRoundedToString(0);
+  }
+
+  public String unRoundedToString(int noTabs){
+    String tabs = "";
+    for (int i = 0; i < noTabs; i++){
+      tabs += "\t";
+    }
+    if (m() == 0 && n() == 0){
+      return "[]";
+    }
+    String result = "";
+    double rounded;
+    String cur;
+    int curChars;
+    int[] colMaxChars = new int[n()];
+    for (int c = 0; c < n(); c++){
+      colMaxChars[c] = 0;
+      for (int r = 0; r < m(); r++){
+        rounded = (get(r,c));
+        cur = rounded + "";
+        curChars = cur.length();
+        if (curChars > colMaxChars[c]){
+          colMaxChars[c] = curChars;
+        }
+      }
+    }
+    for (int r = 0; r < m(); r++){
+      result += tabs+"[ ";
+      for (int c = 0; c < n(); c++){
+        rounded = (get(r,c));
         cur = rounded + "";
         curChars = cur.length();
         for (int i = 0; i < colMaxChars[c] - curChars; i++){

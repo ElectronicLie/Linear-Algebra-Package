@@ -54,10 +54,12 @@ public class SystemOfEquations{
   }
 
   public Vector solution(){
+    solve();
     return solution;
   }
 
   public double[] solutionAsArray(){
+    solve();
     return solution.ary;
   }
 

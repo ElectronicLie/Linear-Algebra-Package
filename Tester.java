@@ -50,8 +50,13 @@ public class Tester{
     };
     SquareMatrix m = new SquareMatrix(ma);
     System.out.println(m);
-    System.out.println(m.refPreservePivots());
-    System.out.println(m.det());
+    // System.out.println(m.getEigenvectors());
+    Identity lil = new Identity(m.dim());
+    lil.scale(10.0000625);
+    SquareMatrix lilt = m.add(lil);
+    System.out.println(lilt.unRoundedToString());
+    System.out.println(lilt.refPreservePivots().unRoundedToString());
+    System.out.println(lilt.det());
 
   }
 
