@@ -125,113 +125,93 @@ public class SquareMatrix extends Matrix{
   }
 
   private double[] calcEigenvalues(){
-    return new double[] {};
+    return doubleRoots(-1000, 1000, -3, Math.pow(10, Mathematic.DEFAULT_ZERO_MARGIN));
   }
-  //
-  // private double[] doubleRoots(double min, double max, int scanStepPowerOfTen, double margin){
-  //
-  //   if (min > max){
-  //     throw new IllegalArgumentException("interval for root-searching is collapsed");
-  //   }
-  //
-  //   if (degree() == 0){
-  //     if (coeffs[0].isZero()){
-  //       return new double[] {};
-  //     }else{
-  //       return new double[] {};
-  //     }
-  //   }
-  //
-  //   // double averageOfCoeffs = 0;
-  //   // for (int i = 0; i < coeffs.length; i++){
-  //   //   averageOfCoeffs += Math.abs(coeffs[i]);
-  //   // }
-  //   // averageOfCoeffs /= coeffs.length;
-  //   //
-  //   // for (int i = 0; i < coeffs.length; i++){
-  //   //   coeffs[i] /= averageOfCoeffs;
-  //   // }
-  //
-  //   double[] roots = new double[0];
-  //
-  //   double scanStep = Math.pow(10, scanStepPowerOfTen);
-  //
-  //   boolean lastPos = false;
-  //   boolean lastNeg = false;
-  //   boolean curPos = false;
-  //   boolean curNeg = false;
-  //
-  //   for (double x = min; x <= max; x += scanStep){
-  //     x = Malo.roundDouble(x, scanStepPowerOfTen);
-  //     double value = apply(x);
-  //     if (value < 0){
-  //       curNeg = true;
-  //       curPos = false;
-  //     }else if (value > 0){
-  //       curNeg = false;
-  //       curPos = true;
-  //     }else if (value == 0){
-  //       roots = Malo.aryAppend(roots, x);
-  //       curPos = false;
-  //       curNeg = false;
-  //     }
-  //
-  //     if (value != 0){
-  //       if ((curPos && lastNeg) || (curNeg && lastPos)){
-  //         double xLast = Malo.roundDouble(x - scanStep, scanStepPowerOfTen);
-  //         double r = binarySearchForRoot(xLast, x, margin);
-  //         roots = Malo.aryAppend(roots, r);
-  //       }
-  //     }
-  //
-  //     lastNeg = curNeg;
-  //     lastPos = curPos;
-  //   }
-  //
-  //   if (roots.length < degree()){
-  //     double[] dRoots = derivative().doubleRoots(min, max, scanStepPowerOfTen, margin); //derivative's roots
-  //     for (int i = 0; i < dRoots.length; i++){
-  //       if (Malo.roughlyEquals(apply(dRoots[i]), 0, margin)){
-  //         roots = Malo.aryAppend(roots, dRoots[i]);
-  //       }
-  //     }
-  //   }
-  //
-  //   return roots;
-  // }
-  //
-  // private double binarySearchForRoot(double lo, double hi, double margin){
-  //   if (lo >= hi){
-  //     throw new IllegalArgumentException
-  //       ("lo bound (" + lo + ") is greater than or equal to hi bound (" + hi + ")");
-  //   }
-  //   boolean done = false;
-  //   double loVal, midVal, hiVal;
-  //   double mid = 0.5*(lo+hi);
-  //   while (! done){
-  //     mid = 0.5*(lo + hi);
-  //     midVal = apply(mid);
-  //     if (Malo.roughlyEquals(midVal, 0, margin)){
-  //       break;
-  //     }
-  //     loVal = apply(lo);
-  //     hiVal = apply(hi);
-  //     if (loVal < 0 && hiVal > 0){
-  //       if (midVal > 0){
-  //         hi = mid;
-  //       }else{
-  //         lo = mid;
-  //       }
-  //     }else{
-  //       if (midVal > 0){
-  //         lo = mid;
-  //       }else{
-  //         hi = mid;
-  //       }
-  //     }
-  //   }
-  //   return mid;
-  // }
+
+  private double[] doubleRoots(double min, double max, int scanStepPowerOfTen, double margin){
+
+    if (min > max){
+      throw new IllegalArgumentException("interval for root-searching is collapsed");
+    }
+
+    double[] roots = new double[0];
+
+    double scanStep = Math.pow(10, scanStepPowerOfTen);
+
+    boolean lastPos = false;
+    boolean lastNeg = false;
+    boolean curPos = false;
+    boolean curNeg = false;
+
+    for (double x = min; x <= max; x += scanStep){
+      x = Malo.roundDouble(x, scanStepPowerOfTen);
+      double value = this.detAtLambda(x);
+      if (value < 0){
+        curNeg = true;
+        curPos = false;
+      }else if (value > 0){
+        curNeg = false;
+        curPos = true;
+      }else if (value == 0){
+        roots = Malo.aryAppend(roots, x);
+        curPos = false;
+        curNeg = false;
+      }
+
+      if (value != 0){
+        if ((curPos && lastNeg) || (curNeg && lastPos)){
+          double xLast = Malo.roundDouble(x - scanStep, scanStepPowerOfTen);
+          double r = binarySearchForRoot(xLast, x, margin);
+          roots = Malo.aryAppend(roots, r);
+        }
+      }
+
+      lastNeg = curNeg;
+      lastPos = curPos;
+    }
+
+    return roots;
+  }
+
+  private double binarySearchForRoot(double lo, double hi, double margin){
+    if (lo >= hi){
+      throw new IllegalArgumentException
+        ("lo bound (" + lo + ") is greater than or equal to hi bound (" + hi + ")");
+    }
+    boolean done = false;
+    double loVal, midVal, hiVal;
+    double mid = 0.5*(lo+hi);
+    while (! done){
+      mid = 0.5*(lo + hi);
+      midVal = this.detAtLambda(mid);
+      if (Malo.roughlyEquals(midVal, 0, margin)){
+        break;
+      }
+      loVal = this.detAtLambda(lo);
+      hiVal = this.detAtLambda(hi);
+      if (loVal < 0 && hiVal > 0){
+        if (midVal > 0){
+          hi = mid;
+        }else{
+          lo = mid;
+        }
+      }else{
+        if (midVal > 0){
+          lo = mid;
+        }else{
+          hi = mid;
+        }
+      }
+    }
+    return mid;
+  }
+
+  private double detAtLambda(double lambda){
+    Identity identTimesNegEV = new Identity(this.dim());
+    identTimesNegEV.scale(-1*lambda);
+    SquareMatrix charEq = this.add(identTimesNegEV);
+    return charEq.det();
+  }
 
   public static SquareMatrix randomMatrix(int dim, double min, double max){
     SquareMatrix random = new SquareMatrix(dim);
