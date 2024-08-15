@@ -162,7 +162,7 @@ public class Matrix{
     }
   }
 
-  protected Matrix refPreservePivots(){ // ref without making pivots 1
+  public Matrix refPreservePivots(){ // ref without making pivots 1
     if (isZero() || m() == 0){
       return this;
     }else{
@@ -182,12 +182,14 @@ public class Matrix{
       }
       // copy.vals[0][c] = 1.0; //fail-safe for double arithmetic
       for (int r = 1; r < m(); r++){
-        copy.combineRows(r, 0, -1 * copy.col(c).get(r));
+        copy.combineRows(r, 0, (-1 * copy.col(c).get(r))/(copy.col(c).get(0)));
         copy.vals[r][c] = 0; //fail-safe for double arithmetic
       }
       Matrix thisStep = copy.submatrix(0, 1, 0, n());
       Matrix nextStep = copy.submatrix(1, 0);
-      return combineVertically(thisStep, nextStep.ref()); // recursion
+      System.out.println("thisStep:\n"+thisStep);
+      System.out.println("nextStep:\n"+nextStep);
+      return combineVertically(thisStep, nextStep.refPreservePivots()); // recursion
     }
   }
 

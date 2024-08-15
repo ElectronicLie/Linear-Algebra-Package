@@ -37,10 +37,21 @@ public class Tester{
     // System.out.println(Arrays.toString(charPoly.roots()));
     // System.out.println(m.getEigenvectors());
 
-    Matrix m = Matrix.randomMatrix(25,26,0);
-    // SystemOfEquations soe = new SystemOfEquations(m);
-    // System.out.println(soe.solution());
-    System.out.println(m.rref());
+    // Matrix m = Matrix.randomMatrix(25,26,0);
+    // // SystemOfEquations soe = new SystemOfEquations(m);
+    // // System.out.println(soe.solution());
+    // System.out.println(m.rref());
+
+    double[][] ma = new double[][] {
+      {-10, 1,   2, -8},
+      {-7,  6, -10,  0},
+      {-4, -7,   0,  7},
+      {8,   0,  -2,  7}
+    };
+    SquareMatrix m = new SquareMatrix(ma);
+    System.out.println(m);
+    System.out.println(m.refPreservePivots());
+    System.out.println(m.det());
 
   }
 
