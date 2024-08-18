@@ -187,8 +187,8 @@ public class Matrix{
       }
       Matrix thisStep = copy.submatrix(0, 1, 0, n());
       Matrix nextStep = copy.submatrix(1, 0);
-      thisStep.correctZeroes();
-      nextStep.correctZeroes();
+      // thisStep.correctZeroes();
+      // nextStep.correctZeroes();
       // System.out.println("thisStep:\n"+thisStep);
       // System.out.println("nextStep:\n"+nextStep);
       return combineVertically(thisStep, nextStep.refPreservePivots()); // recursion

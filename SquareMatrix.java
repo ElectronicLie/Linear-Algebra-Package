@@ -175,7 +175,7 @@ public class SquareMatrix extends Matrix{
   }
 
   private double binarySearchForRoot(double lo, double hi, double margin){
-    System.out.println("binary search was called");
+    // System.out.println("binary search was called");
     if (lo >= hi){
       throw new IllegalArgumentException
         ("lo bound (" + lo + ") is greater than or equal to hi bound (" + hi + ")");
@@ -191,9 +191,9 @@ public class SquareMatrix extends Matrix{
       }
       loVal = this.detAtLambda(lo);
       hiVal = this.detAtLambda(hi);
-      System.out.println("lo: "+lo+"\tlo val: "+loVal);
-      System.out.println("mid: "+mid+"\tmid val: "+midVal);
-      System.out.println("hi: "+hi+"\thi val: "+hiVal+"\n");
+      // System.out.println("lo: "+lo+"\tlo val: "+loVal);
+      // System.out.println("mid: "+mid+"\tmid val: "+midVal);
+      // System.out.println("hi: "+hi+"\thi val: "+hiVal+"\n");
       if (loVal < 0 && hiVal > 0){
         if (midVal > 0){
           hi = mid;
