@@ -152,17 +152,19 @@ public class Matrix{
     return coV.squareCopy();
   }
 
-  protected Matrix refPreservePivots(){ // ref without making pivots 1
+  public Matrix refPreservePivots(){ // ref without making pivots 1
     if (isZero() || m() == 0){
       return this;
     }else{
       Matrix copy = this.copy();
+      // System.out.println("this:\n"+this);
+      // System.out.println("copy:\n"+copy);
       int c;
       for (c = 0; c < n(); c++){
-        if (! col(c).isZero()){
-          if (col(c).get(0).isZero()){
+        if (! copy.col(c).isZero()){
+          if (copy.col(c).get(0).isZero()){
             for (int r = 0; r < m(); r++){
-              if (! col(c).get(r).isZero()){
+              if (! copy.col(c).get(r).isZero()){
                 copy.swapRows(0, r);
               }
             }
@@ -172,12 +174,12 @@ public class Matrix{
       }
       // copy.vals[0][c] = 1.0; //fail-safe for double arithmetic
       for (int r = 1; r < m(); r++){
-        copy.combineRows(r, 0, copy.col(c).get(r).mult(-1));
-        copy.vals[r][c] = new Fraction(0); //fail-safe for double arithmetic
+        copy.combineRows(r, 0, copy.vals[r][c].mult(-1).divide(copy.vals[0][c]));
+        // copy.vals[r][c] = new Fraction(0); //fail-safe for double arithmetic
       }
       Matrix thisStep = copy.submatrix(0, 1, 0, n());
       Matrix nextStep = copy.submatrix(1, 0);
-      return combineVertically(thisStep, nextStep.ref()); // recursion
+      return combineVertically(thisStep, nextStep.refPreservePivots()); // recursion
     }
   }
 
@@ -240,7 +242,7 @@ public class Matrix{
   }
 
   private Matrix rrefAlg(int[][] pivots){
-    System.out.println("rrefAlg:\n"+this);
+    // System.out.println("rrefAlg:\n"+this);
     if (pivots.length == 0){
       return this;
     }
@@ -248,10 +250,10 @@ public class Matrix{
       int c = pivots[p][1];
       int rPivot = pivots[p][0];
       for (int r = rPivot-1; r >= 0; r--){
-        System.out.println("going to combine rows");
+        // System.out.println("going to combine rows");
         System.out.println(this.vals[r][c]);
         combineRows(r, rPivot, this.vals[r][c].mult(-1));
-        System.out.println("have combined rows");
+        // System.out.println("have combined rows");
         vals[r][c] = Fraction.zero(); //fail-safe for double arithmetic
       }
     }
@@ -482,7 +484,7 @@ public class Matrix{
     Matrix copy = new Matrix(m(), n());
     for (int r = 0; r < m(); r++){
       for (int c = 0; c < n(); c++){
-        copy.vals[r][c] = this.vals[r][c];
+        copy.vals[r][c] = this.vals[r][c].copy();
       }
     }
     return copy;

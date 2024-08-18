@@ -70,17 +70,33 @@ public class Tester{
     // RationalFraction tst = new RationalFraction(new Polynomial(new double[] {3,-1}, "L"), "L");
     // System.out.println(tst.factorsToString());
 
-    Fraction[][] ma = new Fraction[][] {
-      {new Fraction(3527, 200), new Fraction(-9), new Fraction(9), Fraction.zero()},
-      {new Fraction(-5), new Fraction(8207329, 200), new Fraction(28216), Fraction.zero()},
-      {Fraction.zero(), Fraction.zero(), Fraction.one(), Fraction.one()}
+    // Fraction[][] ma = new Fraction[][] {
+    //   {new Fraction(-2,3), new Fraction(1,6)},
+    //   {new Fraction(4,5), new Fraction(-5)}
+    // };
+    // SquareMatrix m = new SquareMatrix(ma);
+    // System.out.println(m);
+    // System.out.println(m.refPreservePivots());
+    // System.out.println("app: \n"+m);
+    // System.out.println(m.det());
+
+    int[][] ma = new int[][] {
+      {-10, 1,   2, -8},
+      {-7,  6, -10,  0},
+      {-4, -7,   0,  7},
+      {8,   0,  -2,  7}
     };
-    Matrix m = new Matrix(ma);
-
+    SquareMatrix m = new SquareMatrix(ma);
     System.out.println(m);
-    // System.out.println(m.ref());
-    System.out.println(m.rref());
-
+    // System.out.println(m.getEigenvectors());
+    // Identity lil = new Identity(m.dim());
+    // lil.scale(10.0000625);
+    // SquareMatrix lilt = m.add(lil);
+    // System.out.println(lilt.unRoundedToString());
+    // System.out.println(lilt.refPreservePivots().unRoundedToString());
+    // System.out.println(lilt.det());
+    System.out.println(m.getEigenvectors());
+    // System.out.println(m.det());
 
   }
 
