@@ -46,12 +46,12 @@ public class VariableMatrix{
   }
 
   public VariableExpression det() throws FileNotFoundException{
-    File file = new File("DeterminantFormulas.txt");
+    File file = new File("determinant-formulas.txt");
     Scanner scanner = new Scanner(file);
     String formula = "1";
     for (int i = 1; i <= dim(); i++){
       formula = scanner.nextLine();
-      System.out.println("waawwawa"+formula);
+      System.out.println("formula for this dimension: "+formula);
     }
     System.out.println("det formula: "+formula);
     VariableExpression f = VariableExpression.parseVariableExpression(formula);
