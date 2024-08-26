@@ -87,6 +87,16 @@ public class Matrix{
     return vals[r][c];
   }
 
+  Fraction[] entriesAsArray(){
+    Fraction[] result = new Fraction[m()*n()];
+    for (int r = 0; r < m(); r++){
+      for (int c = 0; c < n(); c++){
+        result[r*n()+c] = vals[r][c];
+      }
+    }
+    return result;
+  }
+
   // OPERATIONS //
 
   public Matrix mult(Matrix A){
@@ -207,7 +217,38 @@ public class Matrix{
       }
       Matrix thisStep = copy.submatrix(0, 1, 0, n());
       Matrix nextStep = copy.submatrix(1, 0);
-      Matrix result = combineVertically(thisStep, nextStep.ref()); // recursion
+      Matrix result = combineVertically(thisStep, nextStep.refAlg()); // recursion
+      return result;
+    }
+  }
+
+  private Matrix refAlg(){
+    if (isZero() || m() == 0){
+      return this;
+    }else{
+      Matrix copy = this.copy();
+      int c;
+      for (c = 0; c < n(); c++){
+        if (! col(c).isZero()){
+          if (col(c).get(0).isZero()){
+            for (int r = 0; r < m(); r++){
+              if (! col(c).get(r).isZero()){
+                copy.swapRows(0, r);
+              }
+            }
+          }
+          break;
+        }
+      }
+      copy.scaleRow(0, Fraction.one().divide(copy.col(c).get(0)));
+      // copy.vals[0][c] = 1.0; //fail-safe for double arithmetic
+      for (int r = 1; r < m(); r++){
+        copy.combineRows(r, 0, copy.col(c).get(r).mult(-1));
+        // copy.vals[r][c] = 0.0; //fail-safe for double arithmetic
+      }
+      Matrix thisStep = copy.submatrix(0, 1, 0, n());
+      Matrix nextStep = copy.submatrix(1, 0);
+      Matrix result = combineVertically(thisStep, nextStep.refAlg()); // recursion
       return result;
     }
   }
@@ -217,7 +258,7 @@ public class Matrix{
       return this;
     }
     Matrix refed = this.ref();
-    System.out.println("REFed:\n"+refed);
+    // System.out.println("REFed:\n"+refed);
     int[][] pivots = new int[0][0];
     for (int r = 0; r < m(); r++){
       for (int c = 0; c < n(); c++){
@@ -240,7 +281,7 @@ public class Matrix{
   }
 
   private Matrix rrefAlg(int[][] pivots){
-    System.out.println("rrefAlg:\n"+this);
+    // System.out.println("rrefAlg:\n"+this);
     if (pivots.length == 0){
       return this;
     }
@@ -248,10 +289,10 @@ public class Matrix{
       int c = pivots[p][1];
       int rPivot = pivots[p][0];
       for (int r = rPivot-1; r >= 0; r--){
-        System.out.println("going to combine rows");
-        System.out.println(this.vals[r][c]);
+        // System.out.println("going to combine rows");
+        // System.out.println(this.vals[r][c]);
         combineRows(r, rPivot, this.vals[r][c].mult(-1));
-        System.out.println("have combined rows");
+        // System.out.println("have combined rows");
         vals[r][c] = Fraction.zero(); //fail-safe for double arithmetic
       }
     }
@@ -482,7 +523,7 @@ public class Matrix{
     Matrix copy = new Matrix(m(), n());
     for (int r = 0; r < m(); r++){
       for (int c = 0; c < n(); c++){
-        copy.vals[r][c] = this.vals[r][c];
+        copy.vals[r][c] = this.vals[r][c].copy();
       }
     }
     return copy;
@@ -534,6 +575,20 @@ public class Matrix{
 
   public static Matrix random(int m, int n){
     return random(m, n, Mathematic.RANDOM_LOWER, Mathematic.RANDOM_UPPER);
+  }
+
+  public static Matrix intRandom(int m, int n, long min, long max){
+    Matrix random = new Matrix(m, n);
+    for (int r = 0; r < m; r++){
+      for (int c = 0; c < n; c++){
+        random.vals[r][c] = Fraction.randomInt(min, max);
+      }
+    }
+    return random;
+  }
+
+  public static Matrix intRandom(int m, int n){
+    return intRandom(m, n, Mathematic.RANDOM_LOWER, Mathematic.RANDOM_UPPER);
   }
 
   public void scale(Fraction k){

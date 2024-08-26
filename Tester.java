@@ -1,13 +1,21 @@
 package linalg;
 
 import java.util.ArrayList;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 import polynomials.*;
 import fractions.*;
 
 public class Tester{
 
-  public static void main(String[] args){
+  public static void main(String[] args) throws FileNotFoundException{
+
+    // int[][] ma = new int[][] {{5, -2, 4}, {-7, -8, 0}, {0, 0, 2}};
+    SquareMatrix m = SquareMatrix.intRandom(4);
+    // SquareMatrix m = new SquareMatrix(ma);
+    System.out.println(m);
+    System.out.println(m.det());
+    System.out.println(m.getEigenvectors());
 
     // Matrix m = Matrix.randomMatrix(2, 4, -1);
     // System.out.println(m);
@@ -70,16 +78,16 @@ public class Tester{
     // RationalFraction tst = new RationalFraction(new Polynomial(new double[] {3,-1}, "L"), "L");
     // System.out.println(tst.factorsToString());
 
-    Fraction[][] ma = new Fraction[][] {
-      {new Fraction(3527, 200), new Fraction(-9), new Fraction(9), Fraction.zero()},
-      {new Fraction(-5), new Fraction(8207329, 200), new Fraction(28216), Fraction.zero()},
-      {Fraction.zero(), Fraction.zero(), Fraction.one(), Fraction.one()}
-    };
-    Matrix m = new Matrix(ma);
-
-    System.out.println(m);
-    // System.out.println(m.ref());
-    System.out.println(m.rref());
+    // Fraction[][] ma = new Fraction[][] {
+    //   {new Fraction(3527, 200), new Fraction(-9), new Fraction(9), Fraction.zero()},
+    //   {new Fraction(-5), new Fraction(8207329, 200), new Fraction(28216), Fraction.zero()},
+    //   {Fraction.zero(), Fraction.zero(), Fraction.one(), Fraction.one()}
+    // };
+    // Matrix m = new Matrix(ma);
+    //
+    // System.out.println(m);
+    // // System.out.println(m.ref());
+    // System.out.println(m.rref());
 
 
   }

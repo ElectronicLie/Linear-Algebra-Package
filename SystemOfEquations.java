@@ -19,7 +19,9 @@ public class SystemOfEquations{
 
   public void makeFirstVariableOne(){
     Matrix copy = matrix.copy();
+    System.out.println("matrix:\n"+matrix);
     makeVariableOne(matrix.m()-1);
+    System.out.println("matrix:\n"+matrix);
     int var = matrix.m()-2;
     while (inconsistent() && var >= 0){
       matrix = copy.copy();
@@ -50,8 +52,10 @@ public class SystemOfEquations{
 
   public void solve(){
     System.out.println("system:\n"+matrix);
+    // System.out.println("matrix before RREF:\n"+matrix);
     rrefed = matrix.rref();
     System.out.println("RREFed:\n"+rrefed+"\n");
+    // System.out.println("matrix after RREF:\n"+matrix);
     // System.out.println(rrefed);
     solution = rrefed.col(rrefed.n()-1);
   }

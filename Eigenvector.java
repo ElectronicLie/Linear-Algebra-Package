@@ -18,7 +18,6 @@ public class Eigenvector extends Vector{
     eq.makeFirstVariableOne();
     // System.out.println("system of equations to calculate eigenvector: \n"+eq);
     eq.solve();
-    System.out.println(eq.solution());
     this.vals = eq.solution().vals;
   }
 

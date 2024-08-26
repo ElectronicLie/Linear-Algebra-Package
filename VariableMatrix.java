@@ -69,7 +69,7 @@ public class VariableMatrix{
     return result;
   }
 
-  private static String[] standardEntryOrder(int dim){
+  public static String[] standardEntryOrder(int dim){
     String[] result = new String[dim*dim];
     int row;
     int col;
