@@ -1,25 +1,24 @@
 package linalg;
 
-import fractions.Fraction;
 import java.util.ArrayList;
 
 public class Edge{
 
   private Node giver;
   private Node taker;
-  private Fraction weight;
+  private double weight;
 
-  public Edge(Node n1, Node n2, Fraction weight){
+  public Edge(Node n1, Node n2, double weight){
     giver = n1;
     taker = n2;
     this.weight = weight;
   }
 
-  public Fraction getWeight(){
+  public double getWeight(){
     return weight;
   }
 
-  protected void setWeight(Fraction newVal){
+  protected void setWeight(double newVal){
     weight = newVal;
   }
 
@@ -30,7 +29,7 @@ public class Edge{
   }
 
   public String toString(){
-    return "(" + giver.getName() + ", " + taker.getName() + " : " + weight.toString() + ")";
+    return "(" + giver.getName() + ", " + taker.getName() + " : " + weight + ")";
   }
 
 }

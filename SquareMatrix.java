@@ -2,7 +2,6 @@ package linalg;
 
 import polynomials.*;
 import malo.*;
-import fractions.Fraction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -30,7 +29,7 @@ public class SquareMatrix extends Matrix{
     }
   }
 
-  public SquareMatrix(Fraction[][] ary){
+  public SquareMatrix(double[][] ary){
     if (ary.length != ary[0].length){
       throw new IllegalArgumentException("square matrix must have an equal number of rows and columns");
     }
@@ -51,7 +50,7 @@ public class SquareMatrix extends Matrix{
     for (int c = 0; c < network.size(); c++){
       for (int r = 0; r < network.size(); r++){
         if (network.getNode(c).getEdge(network.getNode(r)) == null){
-          vals[r][c] = Fraction.zero();
+          vals[r][c] = 0;
         }else{
           vals[r][c] = network.getNode(c).getEdgeWeight(network.getNode(r));
         }
@@ -93,7 +92,7 @@ public class SquareMatrix extends Matrix{
     return minor(0, cExc);
   }
 
-  public Fraction det(){
+  public double det(){
     VariableExpression formula = getDetFormula(dim());
     System.out.println(formula);
     String[] standardEntryOrder = VariableMatrix.standardEntryOrder(dim());
@@ -118,10 +117,10 @@ public class SquareMatrix extends Matrix{
   //     for (int c = 0; c < dim(); c++){
   //       if (r == c){
   //         charEq.vals[r][c] = new RationalExpression
-  //           (new Polynomial(new Fraction[] {vals[r][c], Fraction.negOne()}, "L"), "L");
+  //           (new Polynomial(new double[] {vals[r][c], double.negOne()}, "L"), "L");
   //       }else{
   //         charEq.vals[r][c] = new RationalExpression
-  //           (new Polynomial(new Fraction[] {vals[r][c]}, "L"), "L");
+  //           (new Polynomial(new double[] {vals[r][c]}, "L"), "L");
   //       }
   //     }
   //   }
@@ -145,9 +144,9 @@ public class SquareMatrix extends Matrix{
     for (int r = 0; r < dim(); r++){
       for (int c = 0; c < dim(); c++){
         if (r == c){
-          entries[r*dim()+c] = new Polynomial(new Fraction[] {vals[r][c], Fraction.negOne()}, "L");
+          entries[r*dim()+c] = new Polynomial(new double[] {vals[r][c], -1}, "L");
         }else{
-          entries[r*dim()+c] = new Polynomial(new Fraction[] {vals[r][c]}, "L");
+          entries[r*dim()+c] = new Polynomial(new double[] {vals[r][c]}, "L");
         }
       }
     }
@@ -158,7 +157,7 @@ public class SquareMatrix extends Matrix{
   private void calcEigenvectors(){
     this.eigenvectors = new ArrayList<Eigenvector>();
     Polynomial charPoly = characteristicPolynomial();
-    Fraction[] eigenvals = charPoly.roots();
+    double[] eigenvals = charPoly.rootsAsDoubles();
     for (int e = 0; e < eigenvals.length; e++){
       this.eigenvectors.add(new Eigenvector(this, eigenvals[e]));
     }
@@ -184,28 +183,20 @@ public class SquareMatrix extends Matrix{
     return super.add(other).squareCopy();
   }
 
-  public static SquareMatrix randomFromValue(int dim, double min, double max){
-    return Matrix.randomFromValue(dim, dim, min, max).squareCopy();
-  }
-
-  public static SquareMatrix randomFromValue(int dim, double min, double max, int p){
-    return Matrix.randomFromValue(dim, dim, min, max, p).squareCopy();
-  }
-
-  public static SquareMatrix random(int dim, long min, long max){
+  public static SquareMatrix random(int dim, double min, double max){
     return Matrix.random(dim, dim, min, max).squareCopy();
+  }
+
+  public static SquareMatrix random(int dim, double min, double max, int p){
+    return Matrix.random(dim, dim, min, max, p).squareCopy();
   }
 
   public static SquareMatrix random(int dim){
     return random(dim, Mathematic.RANDOM_LOWER, Mathematic.RANDOM_UPPER);
   }
 
-  public static SquareMatrix intRandom(int dim, long min, long max){
-    return Matrix.intRandom(dim, dim, min, max).squareCopy();
-  }
-
-  public static SquareMatrix intRandom(int dim){
-    return Matrix.intRandom(dim, dim).squareCopy();
+  public static SquareMatrix random(int dim, int p){
+    return random(dim, Mathematic.RANDOM_LOWER, Mathematic.RANDOM_UPPER, p);
   }
 
   protected static VariableExpression getDetFormula(int dim){

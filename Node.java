@@ -1,21 +1,20 @@
 package linalg;
 
 import malo.Malo;
-import fractions.Fraction;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Node{
 
   protected ArrayList<Edge> edges;
-  protected Fraction[] edgeVals;
+  protected double[] edgeVals;
   protected ArrayList<Node> neighbors;
   protected String[] nabrs;
   protected Network network;
   protected String name;
   protected String[] terminology;
 
-  public Node(String name, String[] neibrs, Fraction[] vals, Fraction selfVal){
+  public Node(String name, String[] neibrs, double[] vals, double selfVal){
     this.name = name;
     if (neibrs.length != vals.length){
       throw new IllegalArgumentException("Node must have the same number of neighbors and weighted edges");
@@ -38,7 +37,7 @@ public class Node{
 
   public Node(String name, String[] neibrs){
     this(name, neibrs, Malo.uniformPseudoStochasticAry(neibrs.length+1),
-      new Fraction(1, neibrs.length+1));
+      1.0 / (double)(neibrs.length+1));
   }
 
   void updateNeighbors(){
@@ -125,11 +124,11 @@ public class Node{
     return null;
   }
 
-  public Fraction getEdgeWeight(Node other){
+  public double getEdgeWeight(Node other){
     return getEdge(other).getWeight();
   }
 
-  public Fraction[] getEdgeWeights(){
+  public double[] getEdgeWeights(){
     return edgeVals;
   }
 
@@ -137,24 +136,24 @@ public class Node{
     return name;
   }
 
-  private Fraction[] evenEdgeValsForActiveNeighbors(){ // including self
-    Fraction[] result = new Fraction[edges.size()];
+  private double[] evenEdgeValsForActiveNeighbors(){ // including self
+    double[] result = new double[edges.size()];
     for (int i = 0; i < result.length; i++){
       if (neighbors.get(i) == null)
-        result[i] = Fraction.zero();
+        result[i] = 0;
       else
-        result[i] = new Fraction(1, noActiveNeighbors()); //active neighbors plus self
+        result[i] = 1.0 / (double)(noActiveNeighbors()); // active neighbors plus self
     }
     return result;
   }
 
-  private Fraction[] adjacentEdgeValsForActiveNeighbors(){
-    Fraction[] result = new Fraction[edges.size()];
+  private double[] adjacentEdgeValsForActiveNeighbors(){
+    double[] result = new double[edges.size()];
     for (int i = 0; i < result.length; i++){
       if (neighbors.get(i) == null)
-        result[i] = Fraction.zero();
+        result[i] = 0;
       else
-        result[i] = Fraction.one();
+        result[i] = 1;
     }
     return result;
   }

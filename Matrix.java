@@ -1,17 +1,17 @@
 package linalg;
 
 import malo.*;
-import fractions.Fraction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import fractions.Fraction;
 
 public class Matrix{
 
   // FIELDS //
 
-  protected Fraction[][] vals;
+  protected double[][] vals;
 
   static final int DEFAULT_ROUND = -3;
   static final int DEFAULT_MARGIN = -6;
@@ -21,18 +21,27 @@ public class Matrix{
   public Matrix(){}
 
   public Matrix(int rows, int cols){
-    vals = new Fraction[rows][cols];
+    vals = new double[rows][cols];
   }
 
-  public Matrix(Fraction[][] vals){
+  public Matrix(double[][] vals){
     this.vals = vals;
   }
 
   public Matrix(int[][] iVals){
-    this.vals = new Fraction[iVals.length][iVals[0].length];
+    this.vals = new double[iVals.length][iVals[0].length];
     for (int r = 0; r < vals.length; r++){
-      for (int c = 0; c < vals.length; c++){
-        this.vals[r][c] = new Fraction(iVals[r][c]);
+      for (int c = 0; c < vals[r].length; c++){
+        this.vals[r][c] = (double)(iVals[r][c]);
+      }
+    }
+  }
+
+  public Matrix(Fraction[][] fVals){
+    this.vals = new double[fVals.length][fVals[0].length];
+    for (int r = 0; r < vals.length; r++){
+      for (int c = 0; c < vals[r].length; c++){
+        this.vals[r][c] = fVals[r][c].getValue();
       }
     }
   }
@@ -45,7 +54,7 @@ public class Matrix{
       throw new IllegalArgumentException
         ("matrix must be constructed with at least one column vector");
     }
-    vals = new Fraction[m][cols.size()];
+    vals = new double[m][cols.size()];
     for (int c = 0; c < cols.size(); c++){
       if (cols.get(c).dim() != m){
         throw new IllegalArgumentException
@@ -76,19 +85,19 @@ public class Matrix{
   }
 
   public Vector col(int i){
-    Fraction[] ary = new Fraction[m()];
+    double[] ary = new double[m()];
     for (int r = 0; r < m(); r++){
       ary[r] = vals[r][i];
     }
     return new Vector(ary);
   }
 
-  public Fraction get(int r, int c){
+  public double get(int r, int c){
     return vals[r][c];
   }
 
-  Fraction[] entriesAsArray(){
-    Fraction[] result = new Fraction[m()*n()];
+  double[] entriesAsArray(){
+    double[] result = new double[m()*n()];
     for (int r = 0; r < m(); r++){
       for (int c = 0; c < n(); c++){
         result[r*n()+c] = vals[r][c];
@@ -158,7 +167,7 @@ public class Matrix{
     Matrix coV = this;
     coV.meanCenterRows();
     coV = coV.mult(coV.transpose());
-    coV.scale(new Fraction(1, this.n()));
+    coV.scale(1 / this.n());
     return coV.squareCopy();
   }
 
@@ -170,9 +179,9 @@ public class Matrix{
       int c;
       for (c = 0; c < n(); c++){
         if (! col(c).isZero()){
-          if (col(c).get(0).isZero()){
+          if (get(0, c) == 0){
             for (int r = 0; r < m(); r++){
-              if (! col(c).get(r).isZero()){
+              if (get(r, c) != 0){
                 copy.swapRows(0, r);
               }
             }
@@ -182,8 +191,8 @@ public class Matrix{
       }
       // copy.vals[0][c] = 1.0; //fail-safe for double arithmetic
       for (int r = 1; r < m(); r++){
-        copy.combineRows(r, 0, copy.col(c).get(r).mult(-1));
-        copy.vals[r][c] = new Fraction(0); //fail-safe for double arithmetic
+        copy.combineRows(r, 0, -1 * copy.get(r,c));
+        copy.vals[r][c] = 0; //fail-safe for double arithmetic
       }
       Matrix thisStep = copy.submatrix(0, 1, 0, n());
       Matrix nextStep = copy.submatrix(1, 0);
@@ -199,9 +208,9 @@ public class Matrix{
       int c;
       for (c = 0; c < n(); c++){
         if (! col(c).isZero()){
-          if (col(c).get(0).isZero()){
+          if (get(0, c) == 0){
             for (int r = 0; r < m(); r++){
-              if (! col(c).get(r).isZero()){
+              if (get(r, c) != 0){
                 copy.swapRows(0, r);
               }
             }
@@ -209,10 +218,10 @@ public class Matrix{
           break;
         }
       }
-      copy.scaleRow(0, Fraction.one().divide(copy.col(c).get(0)));
+      copy.scaleRow(0, 1.0 / copy.get(0, c));
       // copy.vals[0][c] = 1.0; //fail-safe for double arithmetic
       for (int r = 1; r < m(); r++){
-        copy.combineRows(r, 0, copy.col(c).get(r).mult(-1));
+        copy.combineRows(r, 0, copy.get(r,c) * -1);
         // copy.vals[r][c] = 0.0; //fail-safe for double arithmetic
       }
       Matrix thisStep = copy.submatrix(0, 1, 0, n());
@@ -230,9 +239,9 @@ public class Matrix{
       int c;
       for (c = 0; c < n(); c++){
         if (! col(c).isZero()){
-          if (col(c).get(0).isZero()){
+          if (get(0, c) == 0){
             for (int r = 0; r < m(); r++){
-              if (! col(c).get(r).isZero()){
+              if (get(r,c) != 0){
                 copy.swapRows(0, r);
               }
             }
@@ -240,10 +249,10 @@ public class Matrix{
           break;
         }
       }
-      copy.scaleRow(0, Fraction.one().divide(copy.col(c).get(0)));
+      copy.scaleRow(0, 1.0 / copy.get(0, c));
       // copy.vals[0][c] = 1.0; //fail-safe for double arithmetic
       for (int r = 1; r < m(); r++){
-        copy.combineRows(r, 0, copy.col(c).get(r).mult(-1));
+        copy.combineRows(r, 0, copy.get(r,c) * -1);
         // copy.vals[r][c] = 0.0; //fail-safe for double arithmetic
       }
       Matrix thisStep = copy.submatrix(0, 1, 0, n());
@@ -262,8 +271,8 @@ public class Matrix{
     int[][] pivots = new int[0][0];
     for (int r = 0; r < m(); r++){
       for (int c = 0; c < n(); c++){
-        if (! refed.vals[r][c].isZero()){
-          if (! refed.vals[r][c].equals(Fraction.one())){
+        if (refed.vals[r][c] != 0){
+          if (refed.vals[r][c] != 1){
             throw new IllegalStateException
               ("REF did not properly make all row pivots equal to one; row pivot: "+vals[r][c]);
                 // for programmer
@@ -289,68 +298,68 @@ public class Matrix{
       int c = pivots[p][1];
       int rPivot = pivots[p][0];
       for (int r = rPivot-1; r >= 0; r--){
-        System.out.println("going to combine rows");
-        System.out.println(this.vals[r][c]);
-        combineRows(r, rPivot, this.vals[r][c].mult(-1));
-        System.out.println("have combined rows");
-        vals[r][c] = Fraction.zero(); //fail-safe for double arithmetic
+        // System.out.println("going to combine rows");
+        // System.out.println(this.vals[r][c]);
+        combineRows(r, rPivot, -1 *this.vals[r][c]);
+        // System.out.println("have combined rows");
+        vals[r][c] = 0; //fail-safe for double arithmetic
       }
     }
     return this;
   }
 
-  private void combineRows(int addedTo, int adding, Fraction scalar){
+  private void combineRows(int addedTo, int adding, double scalar){
     if (addedTo == adding){
       throw new IllegalArgumentException("cannot combine a row with itself");
     }
     for (int c = 0; c < n(); c++){
-      vals[addedTo][c] = vals[addedTo][c].add(vals[adding][c].mult(scalar));
+      vals[addedTo][c] += vals[adding][c] * scalar;
     }
   }
 
   private void combineRows(int added, int adding){
-    combineRows(added, adding, Fraction.one());
+    combineRows(added, adding, 1);
   }
 
-  private void scaleRow(int row, Fraction scalar){
+  private void scaleRow(int row, double scalar){
     for (int c = 0; c < n(); c++){
-      vals[row][c] = vals[row][c].mult(scalar);
+      vals[row][c] *= scalar;
     }
   }
 
   public void swapRows(int rowI1, int rowI2){
     if (rowI1 != rowI2){
-      Fraction[] temp = vals[rowI1];
+      double[] temp = vals[rowI1];
       vals[rowI1] = vals[rowI2];
       vals[rowI2] = temp;
     }
   }
 
   public void meanCenterColumns(){
-    Fraction colMean = Fraction.zero();
+    double colMean = 0;
     for (int c = 0; c < n(); c++){
       for (int r = 0; r < m(); r++){
-        colMean = colMean.add(vals[r][c]);
+        colMean += vals[r][c];
       }
-      colMean = colMean.divide(n());
+      colMean /= n();
       for (int r = 0; r < m(); r++){
-        vals[r][c] = vals[r][c].subtract(colMean);
+        vals[r][c] -= colMean;
       }
-      colMean = Fraction.zero();
+      colMean = 0;
     }
   }
 
   public void meanCenterRows(){
-    Fraction rowMean = Fraction.zero();
+    double rowMean = 0;
     for (int r = 0; r < m(); r++){
       for (int c = 0; c < n(); c++){
-        rowMean = rowMean.add(vals[r][c]);
+        rowMean += vals[r][c];
       }
-      rowMean = rowMean.divide(n());
+      rowMean /= n();
       for (int c = 0; c < n(); c++){
-        vals[r][c] = vals[r][c].subtract(rowMean);
+        vals[r][c] -= rowMean;
       }
-      rowMean = Fraction.zero();
+      rowMean = 0;
     }
   }
 
@@ -382,14 +391,14 @@ public class Matrix{
         ("cannot get weighted average of principal components when matrix has no eigenvectors");
     }
     Eigenvector pc;
-    Fraction eigenvalsSum = Fraction.zero();
+    double eigenvalsSum = 0;
     for (int i = 1; i < pca.size(); i++){
       pc = pca.get(i);
-      eigenvalsSum = eigenvalsSum.add(pc.getEigenvalue());
+      eigenvalsSum += pc.getEigenvalue();
       pc.scale(pc.getEigenvalue());
       mu = mu.add(pc);
     }
-    mu.scale(new Fraction(1, eigenvalsSum));
+    mu.scale(1.0 / eigenvalsSum);
     // System.out.println("weighted average of PCs is complete");
     return mu;
   }
@@ -400,7 +409,7 @@ public class Matrix{
     }
     for (int r = 0; r < m(); r++){
       for (int c = 0; c < n(); c++){
-        if (! vals[r][c].equals(other.vals[r][c])){
+        if (vals[r][c] != (other.vals[r][c])){
           return false;
         }
       }
@@ -429,57 +438,14 @@ public class Matrix{
   // toString //
 
   public String toString(){
-    return toString(0);
+    return toString(Mathematic.DEFAULT_ROUND);
   }
 
-  public String toString(int noTabs){
-    String tabs = "";
-    for (int i = 0; i < noTabs; i++){
-      tabs += "\t";
-    }
-    if (m() == 0 && n() == 0){
-      return "[]";
-    }
-    String result = "";
-    Fraction rounded;
-    String cur;
-    int curChars;
-    int[] colMaxChars = new int[n()];
-    for (int c = 0; c < n(); c++){
-      colMaxChars[c] = 0;
-      for (int r = 0; r < m(); r++){
-        cur = vals[r][c].toString();
-        // cur = rounded + "";
-        curChars = cur.length();
-        if (curChars > colMaxChars[c]){
-          colMaxChars[c] = curChars;
-        }
-      }
-    }
-    for (int r = 0; r < m(); r++){
-      result += tabs+"[ ";
-      for (int c = 0; c < n(); c++){
-        cur = vals[r][c].toString();
-        curChars = cur.length();
-        for (int i = 0; i < colMaxChars[c] - curChars; i++){
-          cur += " ";
-        }
-        result += cur + " ";
-      }
-      result += "]\n";
-    }
-    return result;
+  public String toString(int n){
+    return toString(n, 0);
   }
 
-  public String doubleToString(){
-    return doubleToString(Mathematic.DEFAULT_ROUND);
-  }
-
-  public String doubleToString(int n){
-    return doubleToString(n, 0);
-  }
-
-  public String doubleToString(int n, int noTabs){
+  public String toString(int n, int noTabs){
     String tabs = "";
     for (int i = 0; i < noTabs; i++){
       tabs += "\t";
@@ -495,7 +461,7 @@ public class Matrix{
     for (int c = 0; c < n(); c++){
       colMaxChars[c] = 0;
       for (int r = 0; r < m(); r++){
-        rounded = Malo.roundDouble(vals[r][c].getValue(), n);
+        rounded = Malo.roundDouble(vals[r][c], n);
         cur = rounded + "";
         curChars = cur.length();
         if (curChars > colMaxChars[c]){
@@ -506,7 +472,7 @@ public class Matrix{
     for (int r = 0; r < m(); r++){
       result += tabs+"[ ";
       for (int c = 0; c < n(); c++){
-        rounded = Malo.roundDouble(vals[r][c].getValue(), n);
+        rounded = Malo.roundDouble(vals[r][c], n);
         cur = rounded+"";
         curChars = cur.length();
         for (int i = 0; i < colMaxChars[c] - curChars; i++){
@@ -523,7 +489,7 @@ public class Matrix{
     Matrix copy = new Matrix(m(), n());
     for (int r = 0; r < m(); r++){
       for (int c = 0; c < n(); c++){
-        copy.vals[r][c] = this.vals[r][c].copy();
+        copy.vals[r][c] = this.vals[r][c];
       }
     }
     return copy;
@@ -542,32 +508,21 @@ public class Matrix{
     return copy;
   }
 
-  public static Matrix randomFromValue(int m, int n, double min, double max){
+  public static Matrix random(int m, int n, double min, double max){
     Matrix random = new Matrix(m, n);
     for (int r = 0; r < m; r++){
       for (int c = 0; c < n; c++){
-        random.vals[r][c] = new Fraction(Malo.randomDouble(min, max), "round");
+        random.vals[r][c] = Malo.randomDouble(min, max);
       }
     }
     return random;
   }
 
-  public static Matrix randomFromValue(int m, int n, double min, double max, int p){
+  public static Matrix random(int m, int n, double min, double max, int p){
     Matrix random = new Matrix(m, n);
     for (int r = 0; r < m; r++){
       for (int c = 0; c < n; c++){
-        random.vals[r][c] = new Fraction(Malo.randomDouble(min, max), p, "round");
-      }
-    }
-    return random;
-  }
-
-  public static Matrix random(int m, int n, long min, long max){
-    Matrix random = new Matrix(m, n);
-    long num, den;
-    for (int r = 0; r < m; r++){
-      for (int c = 0; c < n; c++){
-        random.vals[r][c] = Fraction.random(min, max);
+        random.vals[r][c] = Malo.roundDouble(Malo.randomDouble(min, max), p);
       }
     }
     return random;
@@ -577,32 +532,22 @@ public class Matrix{
     return random(m, n, Mathematic.RANDOM_LOWER, Mathematic.RANDOM_UPPER);
   }
 
-  public static Matrix intRandom(int m, int n, long min, long max){
-    Matrix random = new Matrix(m, n);
-    for (int r = 0; r < m; r++){
-      for (int c = 0; c < n; c++){
-        random.vals[r][c] = Fraction.randomInt(min, max);
-      }
-    }
-    return random;
+  public static Matrix random(int m, int n, int p){
+    return random(m, n, Mathematic.RANDOM_LOWER, Mathematic.RANDOM_UPPER, p);
   }
 
-  public static Matrix intRandom(int m, int n){
-    return intRandom(m, n, Mathematic.RANDOM_LOWER, Mathematic.RANDOM_UPPER);
-  }
-
-  public void scale(Fraction k){
+  public void scale(double k){
     for (int r = 0; r < m(); r++){
       for (int c = 0; c < n(); c++){
-        this.vals[r][c] = vals[r][c].mult(k);
+        vals[r][c] *= k;
       }
     }
   }
 
-  public void plus(Fraction k){
+  public void plus(double k){
     for (int r = 0; r < m(); r++){
       for (int c = 0; c < n(); c++){
-        vals[r][c] = vals[r][c].add(k);
+        vals[r][c] += k;
       }
     }
   }
@@ -614,7 +559,7 @@ public class Matrix{
     Matrix result = new Matrix(m(), n());
     for (int r = 0; r < m(); r++){
       for (int c = 0; c < n(); c++){
-        result.vals[r][c] = this.get(r,c).add(m.get(r,c));
+        result.vals[r][c] = this.get(r,c)+(m.get(r,c));
       }
     }
     return result;
@@ -644,20 +589,20 @@ public class Matrix{
     return submatrix(r1, m(), c1, n());
   }
 
-  public Fraction sum(){
-    Fraction sum = Fraction.zero();
-    for (Fraction[] row : vals){
-      for (Fraction val : row){
-        sum = sum.add(val);
+  public double sum(){
+    double sum = 0;
+    for (double[] row : vals){
+      for (double val : row){
+        sum += val;
       }
     }
     return sum;
   }
 
   protected boolean hasZeros(){
-    for (Fraction[] row : vals){
-      for (Fraction val : row){
-        if (val.isZero())
+    for (double[] row : vals){
+      for (double val : row){
+        if (val == 0)
           return true;
       }
     }
@@ -665,9 +610,9 @@ public class Matrix{
   }
 
   protected boolean isZero(){
-    for (Fraction[] row : vals){
-      for (Fraction val : row){
-        if (! val.isZero())
+    for (double[] row : vals){
+      for (double val : row){
+        if (val != 0)
           return false;
       }
     }

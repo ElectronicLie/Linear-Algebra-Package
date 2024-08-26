@@ -1,18 +1,16 @@
 package linalg;
 
-import fractions.Fraction;
-
 public class AdjacencyMatrix extends SquareMatrix{
 
   public AdjacencyMatrix(int dim){
     super(dim);
   }
 
-  public AdjacencyMatrix(Fraction[][] ary){
+  public AdjacencyMatrix(double[][] ary){
     super(ary);
-    for (Fraction[] row : ary){
-      for (Fraction val : row){
-        if ((! val.equals(Fraction.one())) && (! val.isZero())){
+    for (double[] row : ary){
+      for (double val : row){
+        if (! (val == 1 || val == 0)){
           throw new IllegalArgumentException("AdjacencyMatrix can only have entries of 1 or 0");
         }
       }

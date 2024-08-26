@@ -1,7 +1,5 @@
 package linalg;
 
-import fractions.Fraction;
-
 public class MarkovChain{
 
   private Network network;
@@ -44,8 +42,8 @@ public class MarkovChain{
     Vector v = this.steadyState;
     for (int i = v.dim()-1; i >= 0; i--){ //bubble sort
       for (int j = 0; j < i; j++){
-        if (v.get(j).moreThan(v.get(j+1))){
-          Fraction tmp = v.get(j);
+        if (v.get(j) > (v.get(j+1))){
+          double tmp = v.get(j);
           v.vals[j][0] = v.get(j+1);
           v.vals[j+1][0] = tmp;
           String strTmp = nodeNames[j];
@@ -71,7 +69,7 @@ public class MarkovChain{
 
   public String toString(){
     String result = "";
-    Fraction rounded;
+    double rounded;
     String cur;
     int curChars;
     int[] colMaxChars = new int[matrix.n()];
