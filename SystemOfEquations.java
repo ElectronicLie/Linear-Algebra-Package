@@ -19,9 +19,9 @@ public class SystemOfEquations{
 
   public void makeFirstVariableOne(){
     Matrix copy = matrix.copy();
-    System.out.println("matrix:\n"+matrix);
+    // System.out.println("matrix:\n"+matrix);
     makeVariableOne(matrix.m()-1);
-    System.out.println("matrix:\n"+matrix);
+    // System.out.println("matrix:\n"+matrix);
     int var = matrix.m()-2;
     while (inconsistent() && var >= 0){
       matrix = copy.copy();
