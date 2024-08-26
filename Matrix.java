@@ -289,10 +289,10 @@ public class Matrix{
       int c = pivots[p][1];
       int rPivot = pivots[p][0];
       for (int r = rPivot-1; r >= 0; r--){
-        // System.out.println("going to combine rows");
-        // System.out.println(this.vals[r][c]);
+        System.out.println("going to combine rows");
+        System.out.println(this.vals[r][c]);
         combineRows(r, rPivot, this.vals[r][c].mult(-1));
-        // System.out.println("have combined rows");
+        System.out.println("have combined rows");
         vals[r][c] = Fraction.zero(); //fail-safe for double arithmetic
       }
     }
