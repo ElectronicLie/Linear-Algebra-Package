@@ -2,7 +2,6 @@ package linalg;
 
 import polynomials.*;
 import java.util.Scanner;
-import java.io.FileWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -79,19 +78,19 @@ public class DeterminantFormulaGenerator{
     }
     formulasScanner = new Scanner(file);
 
-    System.out.println("FILE CONTENTS: ");
-    try (BufferedReader br = new BufferedReader(new FileReader("determinant-formulas.txt"))) {
-       String bline;
-       while ((bline = br.readLine()) != null) {
-           System.out.println(bline);
-       }
-    }
-    System.out.println();
+    // System.out.println("FILE CONTENTS: ");
+    // try (BufferedReader br = new BufferedReader(new FileReader("determinant-formulas.txt"))) {
+    //    String bline;
+    //    while ((bline = br.readLine()) != null) {
+    //        System.out.println(bline);
+    //    }
+    // }
+    // System.out.println();
 
     String minorFormula;
     for (int i = 1; i < dim; i++){
       minorFormula = formulasScanner.nextLine();
-      System.out.println("cur line: "+minorFormula);
+      // System.out.println("cur line: "+minorFormula);
     }
     VariableMatrix matrix = VariableMatrix.matrixWithStandardEntries(dim);
     System.out.println(matrix);
@@ -101,15 +100,15 @@ public class DeterminantFormulaGenerator{
     int k;
     for (int c = 0; c < dim; c++){
       minor = matrix.minor(c);
-      System.out.println("minor: \n"+minor);
+      // System.out.println("minor: \n"+minor);
       if (c % 2 == 1){
         k = -1;
       }else{
         k = 1;
       }
       minorDet = minor.det().scale(new AlgebraicTerm(k)).scale(new AlgebraicTerm(matrix.get(0,c).toString()));
-      System.out.println("minor det: "+minor.det());
-      System.out.println("term from minor:\n"+minorDet);
+      // System.out.println("minor det: "+minor.det());
+      // System.out.println("term from minor:\n"+minorDet);
       determinant.plus(minorDet);
     }
     // formulasScanner.reset();

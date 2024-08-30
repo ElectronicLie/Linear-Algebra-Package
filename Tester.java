@@ -10,7 +10,7 @@ public class Tester{
   public static void main(String[] args) throws FileNotFoundException{
 
     // int[][] ma = new int[][] {{5, -2, 4}, {-7, -8, 0}, {0, 0, 2}};
-    SquareMatrix m = SquareMatrix.random(4, 0);
+    SquareMatrix m = SquareMatrix.random(5, 0);
     // SquareMatrix m = new SquareMatrix(ma);
     System.out.println(m);
     System.out.println(m.det());

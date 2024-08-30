@@ -227,6 +227,7 @@ public class Matrix{
       Matrix thisStep = copy.submatrix(0, 1, 0, n());
       Matrix nextStep = copy.submatrix(1, 0);
       Matrix result = combineVertically(thisStep, nextStep.refAlg()); // recursion
+      // System.out.println("REFed:\n"+result);
       return result;
     }
   }
@@ -272,9 +273,10 @@ public class Matrix{
     for (int r = 0; r < m(); r++){
       for (int c = 0; c < n(); c++){
         if (refed.vals[r][c] != 0){
-          if (refed.vals[r][c] != 1){
+          if (! Malo.roughlyOne(refed.vals[r][c])){
+            // System.out.println(refed);
             throw new IllegalStateException
-              ("REF did not properly make all row pivots equal to one; row pivot: "+vals[r][c]);
+              ("REF did not properly make all row pivots equal to one; row pivot: "+refed.vals[r][c]);
                 // for programmer
           }else{
             int[] pivotCoords = new int[2];

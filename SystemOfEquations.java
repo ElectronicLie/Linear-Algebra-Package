@@ -50,10 +50,10 @@ public class SystemOfEquations{
   }
 
   public void solve(){
-    System.out.println("system:\n"+matrix);
+    // System.out.println("system:\n"+matrix);
     // System.out.println("matrix before RREF:\n"+matrix);
     rrefed = matrix.rref();
-    System.out.println("RREFed:\n"+rrefed+"\n");
+    // System.out.println("RREFed:\n"+rrefed+"\n");
     // System.out.println("matrix after RREF:\n"+matrix);
     // System.out.println(rrefed);
     solution = rrefed.col(rrefed.n()-1);

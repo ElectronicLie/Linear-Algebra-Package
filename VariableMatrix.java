@@ -51,9 +51,9 @@ public class VariableMatrix{
     String formula = "1";
     for (int i = 1; i <= dim(); i++){
       formula = scanner.nextLine();
-      System.out.println("formula for this dimension: "+formula);
+      // System.out.println("formula for this dimension: "+formula);
     }
-    System.out.println("det formula: "+formula);
+    // System.out.println("det formula: "+formula);
     VariableExpression f = VariableExpression.parseVariableExpression(formula);
     String[] entryOrder = entryOrder();
     return f.plugIn(standardEntryOrder(dim()), entryOrder);
