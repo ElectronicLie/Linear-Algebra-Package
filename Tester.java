@@ -9,12 +9,17 @@ public class Tester{
 
   public static void main(String[] args) throws FileNotFoundException{
 
-    // int[][] ma = new int[][] {{5, -2, 4}, {-7, -8, 0}, {0, 0, 2}};
-    SquareMatrix m = SquareMatrix.random(5, 0);
-    // SquareMatrix m = new SquareMatrix(ma);
-    System.out.println(m);
-    System.out.println(m.det());
-    System.out.println(m.getEigenvectors());
+    String[][] mas = new String[][] {{"a", "b", "c", "k1"}, {"d", "e", "f", "k2"}, {"g", "h", "i", "k3"}};
+    ComplexFractionMatrix m = new ComplexFractionMatrix(mas);
+    System.out.println(m.toString());
+    System.out.println(m.rref());
+
+    // // int[][] ma = new int[][] {{5, -2, 4}, {-7, -8, 0}, {0, 0, 2}};
+    // SquareMatrix m = SquareMatrix.random(5, 0);
+    // // SquareMatrix m = new SquareMatrix(ma);
+    // System.out.println(m);
+    // System.out.println(m.det());
+    // System.out.println(m.getEigenvectors());
 
     // Matrix m = Matrix.randomMatrix(2, 4, -1);
     // System.out.println(m);

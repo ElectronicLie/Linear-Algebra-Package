@@ -18,17 +18,13 @@ public class ComplexFractionMatrix{
     vals = new ComplexFraction[m][n];
   }
 
-  private ComplexFractionMatrix(String[][] strs){
+  public ComplexFractionMatrix(String[][] strs){
     vals = new ComplexFraction[strs.length][strs[0].length];
-    for (int r = 0; r < dim(); r++){
-      for (int c = 0; c < dim(); c++){
+    for (int r = 0; r < m(); r++){
+      for (int c = 0; c < n(); c++){
         vals[r][c] = new ComplexFraction(strs[r][c]);
       }
     }
-  }
-
-  public int dim(){
-    return vals.length;
   }
 
   public ComplexFraction get(int r, int c){
@@ -127,10 +123,10 @@ public class ComplexFractionMatrix{
   }
 
   private String[] entryOrder(){
-    String[] result = new String[dim()*dim()];
-    for (int r = 0; r < dim(); r++){
-      for (int c = 0; c < dim(); c++){
-        result[r*dim()+c] = vals[r][c].getSingleVariable();
+    String[] result = new String[m()*n()];
+    for (int r = 0; r < m(); r++){
+      for (int c = 0; c < n(); c++){
+        result[r*n()+c] = vals[r][c].getSingleVariable();
       }
     }
     return result;
@@ -171,17 +167,17 @@ public class ComplexFractionMatrix{
     for (int i = 0; i < noTabs; i++){
       tabs += "\t";
     }
-    if (dim() == 0){
+    if (m() == 0 || n() == 0){
       return "[]";
     }
     String result = "";
     // Fraction rounded;
     String cur;
     int curChars;
-    int[] colMaxChars = new int[dim()];
-    for (int c = 0; c < dim(); c++){
+    int[] colMaxChars = new int[n()];
+    for (int c = 0; c < n(); c++){
       colMaxChars[c] = 0;
-      for (int r = 0; r < dim(); r++){
+      for (int r = 0; r < m(); r++){
         cur = vals[r][c].toString();
         // cur = rounded + "";
         curChars = cur.length();
@@ -190,9 +186,9 @@ public class ComplexFractionMatrix{
         }
       }
     }
-    for (int r = 0; r < dim(); r++){
+    for (int r = 0; r < m(); r++){
       result += tabs+"[ ";
-      for (int c = 0; c < dim(); c++){
+      for (int c = 0; c < n(); c++){
         cur = vals[r][c].toString();
         curChars = cur.length();
         for (int i = 0; i < colMaxChars[c] - curChars; i++){
