@@ -49,14 +49,32 @@ public class SystemOfEquations{
     matrix = Matrix.combineVertically(top, matrix);
   }
 
-  public void solve(){
-    // System.out.println("system:\n"+matrix);
-    // System.out.println("matrix before RREF:\n"+matrix);
-    rrefed = matrix.rref();
-    // System.out.println("RREFed:\n"+rrefed+"\n");
-    // System.out.println("matrix after RREF:\n"+matrix);
-    // System.out.println(rrefed);
-    solution = rrefed.col(rrefed.n()-1);
+  public boolean solve(){
+    if (noEquations() == noVariables()){ // Cramer's rule
+      double[] solutionAry = new double[noVariables()];
+      double det = matrix.submatrix(0, matrix.m(), 0, matrix.n()-1).squareCopy().det();
+      if (det == 0){
+        return false;
+      }
+      double subDet;
+      for (int i = 0; i < noVariables(); i++){
+        subDet = pseudoMinor(i).det();
+        solutionAry[i] = subDet / det;
+      }
+      solution = new Vector(solutionAry);
+      Matrix ident = new Identity(noVariables());
+      rrefed = Matrix.combineHorizontally(ident, solution);
+      return true;
+    }else{
+      // System.out.println("system:\n"+matrix);
+      // System.out.println("matrix before RREF:\n"+matrix);
+      rrefed = matrix.rref();
+      // System.out.println("RREFed:\n"+rrefed+"\n");
+      // System.out.println("matrix after RREF:\n"+matrix);
+      // System.out.println(rrefed);
+      solution = rrefed.col(rrefed.n()-1);
+      return true;
+    }
   }
 
   public Vector solution(){
@@ -67,8 +85,30 @@ public class SystemOfEquations{
     return solution.ary;
   }
 
+  private SquareMatrix pseudoMinor(int cExc){
+    SquareMatrix result = new SquareMatrix(matrix.m());
+    for (int c = 0; c < cExc; c++){
+      for (int r = 0; r < result.dim(); r++){
+        // System.out.println(result);
+        result.vals[r][c] = this.matrix.vals[r][c];
+      }
+    }
+    for (int r = 0; r < result.dim(); r++){
+      result.vals[r][cExc] = this.matrix.vals[r][matrix.n()-1];
+    }
+    for (int c = cExc + 1; c < result.dim(); c++){
+      for (int r = 0; r < result.dim(); r++){
+        result.vals[r][c] = this.matrix.vals[r][c];
+      }
+    }
+    return result;
+  }
+
   public boolean inconsistent(){
-    solve();
+    boolean solved = solve();
+    if (solved == false){
+      return false;
+    }
     for (int r = 0; r < noEquations(); r++){
       boolean zero = true;
       for (int c = 0; c < noVariables(); c++){

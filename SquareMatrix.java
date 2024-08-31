@@ -94,10 +94,10 @@ public class SquareMatrix extends Matrix{
 
   public double det(){
     VariableExpression formula = getDetFormula(dim());
-    System.out.println(formula);
+    // System.out.println(formula);
     String[] standardEntryOrder = VariableMatrix.standardEntryOrder(dim());
-    System.out.println(Arrays.toString(standardEntryOrder));
-    System.out.println(Arrays.toString(entriesAsArray()));
+    // System.out.println(Arrays.toString(standardEntryOrder));
+    // System.out.println(Arrays.toString(entriesAsArray()));
     return formula.plugIn(standardEntryOrder, entriesAsArray());
   }
 

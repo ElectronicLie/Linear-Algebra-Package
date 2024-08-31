@@ -22,6 +22,10 @@ public class VariableMatrix{
     }
   }
 
+  public VariableMatrix(int m, int n){
+    vals = new VariableExpression[m][n];
+  }
+
   public int dim(){
     return vals.length;
   }
