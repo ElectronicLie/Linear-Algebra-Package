@@ -1,5 +1,7 @@
 package linalg;
 
+import malo.*;
+
 public class MarkovChain{
 
   private Network network;
@@ -26,15 +28,23 @@ public class MarkovChain{
   }
 
   public String steadyStateToString(){
+    return steadyStateToString(Mathematic.DEFAULT_ROUND);
+  }
+
+  public String steadyStateToString(int p){
     Vector v = getSteadyState();
     String result = "";
     for (int n = 0; n < network.size(); n++){
-      result += "[ " + v.get(n) + " ] " + network.getNode(n).getName() + "\n";
+      result += "[ " + Malo.roundDouble(v.get(n), p) + " ] " + network.getNode(n).getName() + "\n";
     }
     return result;
   }
 
   public String sortedSteadyStateToString(){
+    return sortedSteadyStateToString(Mathematic.DEFAULT_ROUND);
+  }
+
+  public String sortedSteadyStateToString(int p){
     String[] nodeNames = new String[network.size()];
     for (int n = 0; n < network.size(); n++){
       nodeNames[n] = network.getNode(n).getName();
@@ -44,8 +54,8 @@ public class MarkovChain{
       for (int j = 0; j < i; j++){
         if (v.get(j) > (v.get(j+1))){
           double tmp = v.get(j);
-          v.vals[j][0] = v.get(j+1);
-          v.vals[j+1][0] = tmp;
+          v.vals[j][0] = Malo.roundDouble(v.get(j+1), p);
+          v.vals[j+1][0] = Malo.roundDouble(tmp, p);
           String strTmp = nodeNames[j];
           nodeNames[j] = nodeNames[j+1];
           nodeNames[j+1] = strTmp;

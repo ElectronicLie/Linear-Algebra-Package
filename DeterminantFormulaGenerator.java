@@ -18,15 +18,15 @@ public class DeterminantFormulaGenerator{
     }
     int dim = Integer.parseInt(args[0]);
     VariableExpression result = generateFormula(dim);
-    System.out.println("generated formula for dimension " + args[0] + ":");
-    System.out.println(result.toString());
-    System.out.println(result.parseableToString());
+    // System.out.println("generated formula for dimension " + args[0] + ":");
+    // System.out.println(result.toString());
+    // System.out.println(result.parseableToString());
     if (args.length == 2 && args[1].equals("write")){
       File file = new File("determinant-formulas.txt");
       Scanner scanner = new Scanner(file);
       String line;
       String text = "";
-      System.out.println("dimension: "+ dim);
+      // System.out.println("dimension: "+ dim);
       scanner.reset();
       for (int l = 1; l < dim; l++){
         line = scanner.nextLine();
@@ -42,6 +42,7 @@ public class DeterminantFormulaGenerator{
       }
       Path fileName = Path.of("determinant-formulas.txt");
       Files.writeString(fileName, text);
+      // Files.writeString(fileName, "111");
     }else if (args.length == 2){
       throw new IllegalArgumentException("second argument is "+args[1]+", not \"write\"");
     }
@@ -93,7 +94,7 @@ public class DeterminantFormulaGenerator{
       // System.out.println("cur line: "+minorFormula);
     }
     VariableMatrix matrix = VariableMatrix.matrixWithStandardEntries(dim);
-    System.out.println(matrix);
+    // System.out.println(matrix);
     VariableMatrix minor;
     VariableExpression determinant = VariableExpression.zero();
     VariableExpression minorDet;
