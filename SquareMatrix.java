@@ -93,12 +93,13 @@ public class SquareMatrix extends Matrix{
   }
 
   public double det(){
-    VariableExpression formula = getDetFormula(dim());
+    EntryExpression formula = getDetFormula(dim());
     // System.out.println(formula);
-    String[] standardEntryOrder = VariableMatrix.standardEntryOrder(dim());
-    // System.out.println(Arrays.toString(standardEntryOrder));
-    // System.out.println(Arrays.toString(entriesAsArray()));
-    return formula.plugIn(standardEntryOrder, entriesAsArray());
+    // String[] standardEntryOrder = VariableMatrix.standardEntryOrder(dim());
+    // // System.out.println(Arrays.toString(standardEntryOrder));
+    // // System.out.println(Arrays.toString(entriesAsArray()));
+    // return formula.plugIn(standardEntryOrder, entriesAsArray());
+    return formula.plugIn(this);
   }
 
   // public SquareMatrix luDecomposition(){
@@ -139,19 +140,19 @@ public class SquareMatrix extends Matrix{
   // }
 
   public Polynomial characteristicPolynomial(){
-    String[] seo = VariableMatrix.standardEntryOrder(dim());
-    Polynomial[] entries = new Polynomial[seo.length];
+    // String[] seo = VariableMatrix.standardEntryOrder(dim());
+    Polynomial[][] entries = new Polynomial[dim()][dim()];
     for (int r = 0; r < dim(); r++){
       for (int c = 0; c < dim(); c++){
         if (r == c){
-          entries[r*dim()+c] = new Polynomial(new double[] {vals[r][c], -1}, "L");
+          entries[r][c] = new Polynomial(new double[] {vals[r][c], -1}, "L");
         }else{
-          entries[r*dim()+c] = new Polynomial(new double[] {vals[r][c]}, "L");
+          entries[r][c] = new Polynomial(new double[] {vals[r][c]}, "L");
         }
       }
     }
-    VariableExpression formula = getDetFormula(dim());
-    return formula.plugIn(seo, entries);
+    EntryExpression formula = getDetFormula(dim());
+    return formula.plugIn(entries);
   }
 
   private void calcEigenvectors(){
@@ -199,9 +200,9 @@ public class SquareMatrix extends Matrix{
     return random(dim, Mathematic.RANDOM_LOWER, Mathematic.RANDOM_UPPER, p);
   }
 
-  protected static VariableExpression getDetFormula(int dim){
+  protected static String getDetFormulaStr(int dim){
     if (dim == 0){
-      return VariableExpression.one();
+      return "1";
     }
     String formulaStr = "";
     Scanner scanner = new Scanner("");
@@ -218,8 +219,29 @@ public class SquareMatrix extends Matrix{
         ("formula for determinant of dimension "+dim+" has not yet been generated");
       }
     }
-    VariableExpression formula = VariableExpression.parseVariableExpression(formulaStr);
-    return formula;
+    return formulaStr;
+  }
+
+  protected static EntryExpression getDetFormula(int dim){
+    if (dim == 0){
+      return EntryExpression.one();
+    }
+    String formulaStr = "";
+    Scanner scanner = new Scanner("");
+    try{
+      scanner = new Scanner(detFormulas);
+    }catch(Exception e){
+      e.printStackTrace();
+    }
+    for (int l = 1; l <= dim; l++){
+      try{
+        formulaStr = scanner.nextLine();
+      }catch(Exception e){
+        throw new IllegalStateException
+        ("formula for determinant of dimension "+dim+" has not yet been generated");
+      }
+    }
+    return EntryExpression.parseEntryExpression(formulaStr);
   }
 
 }

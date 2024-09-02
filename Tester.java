@@ -9,23 +9,37 @@ public class Tester{
 
   public static void main(String[] args) throws FileNotFoundException{
 
+    String eStr = "+ 0 0 1 1";
+    // EntryExpression ee = EntryExpression.parseEntryExpression(eeStr)
+    Entry e = Entry.parseEntry(eStr);
+    System.out.println(e);
+
+    String eeStr = "+ 0 0 , - 1 1 ,";
+    EntryExpression ee = EntryExpression.parseEntryExpression(eeStr);
+    System.out.println(ee);
+
+    int[][] ma = new int[][] {{1, 2},{3,4}};
+    SquareMatrix m = new SquareMatrix(ma);
+
+    System.out.println(m.det());
+
     // String[][] mas = new String[][] {{"a", "b", "c", "k1"}, {"d", "e", "f", "k2"}, {"g", "h", "i", "k3"}};
     // ComplexFractionMatrix m = new ComplexFractionMatrix(mas);
     // System.out.println(m.toString());
     // System.out.println(m.rref());
 
     // // int[][] ma = new int[][] {{5, -2, 4}, {-7, -8, 0}, {0, 0, 2}};
-    SquareMatrix m = SquareMatrix.random(5, 0);
-    // SystemOfEquations soe = new SystemOfEquations(m);
-    // soe.addZeroConstants();
-    // soe.makeFirstVariableOne();
-    // System.out.println(soe);
-    // boolean solved = soe.solve();
-    // System.out.println(soe.solution());
-    // // SquareMatrix m = new SquareMatrix(ma);
-    System.out.println(m);
-    System.out.println(m.det());
-    System.out.println(m.getEigenvectors());
+    // SquareMatrix m = SquareMatrix.random(5, 0);
+    // // SystemOfEquations soe = new SystemOfEquations(m);
+    // // soe.addZeroConstants();
+    // // soe.makeFirstVariableOne();
+    // // System.out.println(soe);
+    // // boolean solved = soe.solve();
+    // // System.out.println(soe.solution());
+    // // // SquareMatrix m = new SquareMatrix(ma);
+    // System.out.println(m);
+    // System.out.println(m.det());
+    // System.out.println(m.getEigenvectors());
 
     // Matrix m = Matrix.randomMatrix(2, 4, -1);
     // System.out.println(m);

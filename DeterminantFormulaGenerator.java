@@ -17,9 +17,9 @@ public class DeterminantFormulaGenerator{
       throw new IllegalArgumentException("args.length is not 1 or 2");
     }
     int dim = Integer.parseInt(args[0]);
-    VariableExpression result = generateFormula(dim);
+    EntryExpression result = generateFormula(dim);
     // System.out.println("generated formula for dimension " + args[0] + ":");
-    // System.out.println(result.toString());
+    System.out.println(result.toString());
     // System.out.println(result.parseableToString());
     if (args.length == 2 && args[1].equals("write")){
       File file = new File("determinant-formulas.txt");
@@ -32,7 +32,7 @@ public class DeterminantFormulaGenerator{
         line = scanner.nextLine();
         text += line + "\n";
       }
-      text += result.parseableToString();
+      text += result.toString();
       if (scanner.hasNextLine()){
         line = scanner.nextLine();
       }
@@ -48,7 +48,7 @@ public class DeterminantFormulaGenerator{
     }
   }
 
-  private static VariableExpression generateFormula(int dim) throws FileNotFoundException, IOException{
+  private static EntryExpression generateFormula(int dim) throws FileNotFoundException, IOException{
     // System.out.println("FILE CONTENTS: ");
     // try (BufferedReader br = new BufferedReader(new FileReader("determinant-formulas.txt"))) {
     //    String bline;
@@ -57,7 +57,7 @@ public class DeterminantFormulaGenerator{
     //    }
     // }
     if (dim == 1){
-      return new VariableExpression("m_(0,0)");
+      return new EntryExpression(1, 0, 0);
     }
     File file = new File("determinant-formulas.txt");
     Scanner formulasScanner;
@@ -96,8 +96,8 @@ public class DeterminantFormulaGenerator{
     VariableMatrix matrix = VariableMatrix.matrixWithStandardEntries(dim);
     // System.out.println(matrix);
     VariableMatrix minor;
-    VariableExpression determinant = VariableExpression.zero();
-    VariableExpression minorDet;
+    EntryExpression determinant = EntryExpression.zero();
+    EntryExpression minorDet;
     int k;
     for (int c = 0; c < dim; c++){
       minor = matrix.minor(c);
@@ -107,10 +107,13 @@ public class DeterminantFormulaGenerator{
       }else{
         k = 1;
       }
-      minorDet = minor.det().scale(new AlgebraicTerm(k)).scale(new AlgebraicTerm(matrix.get(0,c).toString()));
+      minorDet = minor.det();
+      minorDet.scale(k);
+      minorDet.scale(matrix.get(0,c ));
+      // minorDet = minor.det().scale(new AlgebraicTerm(k)).scale(new AlgebraicTerm(matrix.get(0,c).toString()));
       // System.out.println("minor det: "+minor.det());
       // System.out.println("term from minor:\n"+minorDet);
-      determinant.plus(minorDet);
+      determinant.add(minorDet);
     }
     // formulasScanner.reset();
     // System.out.println("FILE CONTENTS: ");

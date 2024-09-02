@@ -7,35 +7,33 @@ import java.io.FileNotFoundException;
 
 public class VariableMatrix{
 
-  private VariableExpression[][] vals;
+  private Entry[][] vals;
 
-  public VariableMatrix(VariableExpression[][] ary){
+  public VariableMatrix(Entry[][] ary){
     vals = ary;
   }
 
-  private VariableMatrix(String[][] strs){
-    vals = new VariableExpression[strs.length][strs[0].length];
-    for (int r = 0; r < dim(); r++){
-      for (int c = 0; c < dim(); c++){
-        vals[r][c] = new VariableExpression(strs[r][c]);
+  private VariableMatrix(int dim){
+    vals = new Entry[dim][dim];
+    for (int r = 0; r < dim; r++){
+      for (int c = 0; c < dim; c++){
+        vals[r][c] = new Entry(1, r, c);
       }
     }
-  }
-
-  public VariableMatrix(int m, int n){
-    vals = new VariableExpression[m][n];
   }
 
   public int dim(){
     return vals.length;
   }
 
-  public VariableExpression get(int r, int c){
+  public Entry get(int r, int c){
     return vals[r][c];
   }
 
+
+
   public VariableMatrix minor(int cExc){
-    VariableExpression[][] minorVals = new VariableExpression[vals.length-1][vals.length-1];
+    Entry[][] minorVals = new Entry[vals.length-1][vals.length-1];
     for (int r = 1; r < dim(); r++){
       for (int c = 0; c < cExc; c++){
         minorVals[r-1][c] = vals[r][c];
@@ -49,7 +47,7 @@ public class VariableMatrix{
     return new VariableMatrix(minorVals);
   }
 
-  public VariableExpression det() throws FileNotFoundException{
+  public EntryExpression det() throws FileNotFoundException{
     File file = new File("determinant-formulas.txt");
     Scanner scanner = new Scanner(file);
     String formula = "1";
@@ -58,45 +56,51 @@ public class VariableMatrix{
       // System.out.println("formula for this dimension: "+formula);
     }
     // System.out.println("det formula: "+formula);
-    VariableExpression f = VariableExpression.parseVariableExpression(formula);
-    String[] entryOrder = entryOrder();
-    return f.plugIn(standardEntryOrder(dim()), entryOrder);
+    EntryExpression f = EntryExpression.parseEntryExpression(formula);
+    // String[] entryOrder = entryOrder();
+    return f.plugIn(this);
   }
 
-  private String[] entryOrder(){
-    String[] result = new String[dim()*dim()];
-    for (int r = 0; r < dim(); r++){
-      for (int c = 0; c < dim(); c++){
-        result[r*dim()+c] = vals[r][c].getSingleVariable();
-      }
-    }
-    return result;
-  }
+  // private String[] entryOrder(){
+  //   String[] result = new String[dim()*dim()];
+  //   for (int r = 0; r < dim(); r++){
+  //     for (int c = 0; c < dim(); c++){
+  //       result[r*dim()+c] = vals[r][c].getSingleVariable();
+  //     }
+  //   }
+  //   return result;
+  // }
 
-  public static String[] standardEntryOrder(int dim){
-    String[] result = new String[dim*dim];
-    int row;
-    int col;
-    for (int i = 0; i < result.length; i++){
-      row = i / dim;
-      col = i % dim;
-      result[i] = "m_("+row+","+col+")";
-    }
-    return result;
-  }
+  // public static String[] standardEntryOrder(int dim){
+  //   String[] result = new String[dim*dim];
+  //   int row;
+  //   int col;
+  //   for (int i = 0; i < result.length; i++){
+  //     row = i / dim;
+  //     col = i % dim;
+  //     result[i] = "m_("+row+","+col+")";
+  //   }
+  //   return result;
+  // }
 
-  private static String[][] standardEntryOrder2d(int dim){
-    String[][] result = new String[dim][dim];
-    for (int r = 0; r < dim; r++){
-      for (int c = 0; c < dim; c++){
-        result[r][c] = "m_("+r+","+c+")";
-      }
-    }
-    return result;
-  }
+  // private static String[][] standardEntryOrder2d(int dim){
+  //   String[][] result = new String[dim][dim];
+  //   for (int r = 0; r < dim; r++){
+  //     for (int c = 0; c < dim; c++){
+  //       result[r][c] = "m_("+r+","+c+")";
+  //     }
+  //   }
+  //   return result;
+  // }
 
   public static VariableMatrix matrixWithStandardEntries(int dim){
-    return new VariableMatrix(standardEntryOrder2d(dim));
+    VariableMatrix result = new VariableMatrix(dim);
+    for (int r = 0; r < dim; r++){
+      for (int c = 0; c < dim; c++){
+        result.vals[r][c] = new Entry(1, r, c);
+      }
+    }
+    return result;
   }
 
   public String toString(){
