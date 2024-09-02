@@ -18,9 +18,11 @@ public class Tester{
     // EntryExpression ee = EntryExpression.parseEntryExpression(eeStr);
     // System.out.println(ee);
 
-    int[][] ma = new int[][] {{1, 2, 3},{4,5, 6}, {7, 8, 9}};
-    SquareMatrix m = new SquareMatrix(ma);
+    // int[][] ma = new int[][] {{1, 2, 3},{4,5, 6}, {7, 8, 9}};
+    // SquareMatrix m = new SquareMatrix(ma);
+    SquareMatrix m = SquareMatrix.random(7, 0);
 
+    System.out.println(m);
     System.out.println(m.det());
 
     // String[][] mas = new String[][] {{"a", "b", "c", "k1"}, {"d", "e", "f", "k2"}, {"g", "h", "i", "k3"}};
