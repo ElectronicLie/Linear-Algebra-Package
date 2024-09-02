@@ -9,16 +9,16 @@ public class Tester{
 
   public static void main(String[] args) throws FileNotFoundException{
 
-    String eStr = "+ 0 0 1 1";
-    // EntryExpression ee = EntryExpression.parseEntryExpression(eeStr)
-    Entry e = Entry.parseEntry(eStr);
-    System.out.println(e);
+    // String eStr = "+ 0 0 1 1";
+    // // EntryExpression ee = EntryExpression.parseEntryExpression(eeStr)
+    // Entry e = Entry.parseEntry(eStr);
+    // System.out.println(e);
+    //
+    // String eeStr = "+ 0 0 , - 1 1 ,";
+    // EntryExpression ee = EntryExpression.parseEntryExpression(eeStr);
+    // System.out.println(ee);
 
-    String eeStr = "+ 0 0 , - 1 1 ,";
-    EntryExpression ee = EntryExpression.parseEntryExpression(eeStr);
-    System.out.println(ee);
-
-    int[][] ma = new int[][] {{1, 2},{3,4}};
+    int[][] ma = new int[][] {{1, 2, 3},{4,5, 6}, {7, 8, 9}};
     SquareMatrix m = new SquareMatrix(ma);
 
     System.out.println(m.det());

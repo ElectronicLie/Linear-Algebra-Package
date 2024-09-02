@@ -108,11 +108,10 @@ public class DeterminantFormulaGenerator{
         k = 1;
       }
       minorDet = minor.det();
+      // System.out.println("minor det.: " + minorDet);
       minorDet.scale(k);
       minorDet.scale(matrix.get(0,c ));
-      // minorDet = minor.det().scale(new AlgebraicTerm(k)).scale(new AlgebraicTerm(matrix.get(0,c).toString()));
-      // System.out.println("minor det: "+minor.det());
-      // System.out.println("term from minor:\n"+minorDet);
+      // System.out.println("scaled minor det.: "+minorDet);
       determinant.add(minorDet);
     }
     // formulasScanner.reset();

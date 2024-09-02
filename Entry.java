@@ -90,7 +90,7 @@ public class Entry{
   }
 
   public Entry plugIn(VariableMatrix matrix){
-    Entry result = new Entry();
+    Entry result = new Entry(this.sign);
     int r;
     int c;
     for (int p = 0; p < entries.length/2; p++){
