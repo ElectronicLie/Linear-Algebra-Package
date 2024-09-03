@@ -84,6 +84,19 @@ public class Vector extends Matrix{
     return v.dot(u);
   }
 
+  public static Vector weightAverage(Vector[] vectors, double[] weights){
+    if (vectors.length != weights.length){
+      throw new IllegalArgumentException("different number of vectors and weights");
+    }
+    Vector average = zero(vectors[0].dim());
+    for (int i = 0; i < vectors.length; i++){
+      vectors[i].scale(weights[i]);
+      average = average.add(vectors[i]);
+    }
+    average.scale(1.0 / (double)(vectors.length));
+    return average;
+  }
+
   public boolean orthogonal(Vector v){
     return (dot(v) == 0);
   }

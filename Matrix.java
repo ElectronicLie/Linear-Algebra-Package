@@ -165,9 +165,11 @@ public class Matrix{
 
   public SquareMatrix coVarianceMatrix(){
     Matrix coV = this;
+    // System.out.println(coV);
     coV.meanCenterRows();
+    // System.out.println(coV);
     coV = coV.mult(coV.transpose());
-    coV.scale(1 / this.n());
+    coV.scale(1.0 / (double)(this.n()));
     return coV.squareCopy();
   }
 
