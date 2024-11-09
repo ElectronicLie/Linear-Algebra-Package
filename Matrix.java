@@ -106,6 +106,38 @@ public class Matrix{
     return result;
   }
 
+  public int[][] findMaxIndices(){
+    int[][] result = new int[][] {{0,0}};
+    double maxVal = get(0,0);
+    for (int r = 0; r < m(); r++){
+      for (int c = 0; c < n(); c++){
+        if (get(r,c) > maxVal){
+          maxVal = get(r,c);
+          result = new int[][] {{r, c}};
+        }else if (get(r,c) == maxVal){
+          result = Malo.aryAppend(result, new int[] {r,c});
+        }
+      }
+    }
+    return result;
+  }
+
+  public int[][] findMinIndices(){
+    int[][] result = new int[][] {{0,0}};
+    double minVal = get(0,0);
+    for (int r = 0; r < m(); r++){
+      for (int c = 0; c < n(); c++){
+        if (get(r,c) < minVal){
+          minVal = get(r,c);
+          result = new int[][] {{r, c}};
+        }else if (get(r,c) == minVal){
+          result = Malo.aryAppend(result, new int[] {r,c});
+        }
+      }
+    }
+    return result;
+  }
+
   // OPERATIONS //
 
   public Matrix mult(Matrix A){
