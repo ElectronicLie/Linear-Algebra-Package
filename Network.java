@@ -32,6 +32,12 @@ public class Network<N extends Node>{
     updateNodes();
   }
 
+  public void addNodes(ArrayList<N> al){
+    for (int i = 0; i < al.size(); i++){
+      addNode(al.get(i));
+    }
+  }
+
   protected void updateNode(int n){
     getNode(n).updateNeighbors();
   }

@@ -20,10 +20,14 @@ public class Tester{
 
     // int[][] ma = new int[][] {{1, 2, 3},{4,5, 6}, {7, 8, 9}};
     // SquareMatrix m = new SquareMatrix(ma);
-    SquareMatrix m = SquareMatrix.random(7, 0);
+    // SquareMatrix m = SquareMatrix.random(7, 0);
+    //
+    // System.out.println(m);
+    // System.out.println(m.det());
 
+    Matrix m = Matrix.random(25, 114, 0);
     System.out.println(m);
-    System.out.println(m.det());
+    System.out.println(m.coVarianceMatrix());
 
     // String[][] mas = new String[][] {{"a", "b", "c", "k1"}, {"d", "e", "f", "k2"}, {"g", "h", "i", "k3"}};
     // ComplexFractionMatrix m = new ComplexFractionMatrix(mas);
